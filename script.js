@@ -29,18 +29,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const noLivesPopup = document.getElementById('no-lives-popup');
   const countdownTimer = document.getElementById('countdown-timer');
 
-  // Loading Bar Animation
-  let loadValue = 0;
-  const loadingInterval = setInterval(() => {
-    loadValue += 5;
-    loadingProgress.style.width = loadValue + "%";
+  // Initialize Loading Animation
+  function startLoadingAnimation() {
+    let loadValue = 0;
+    const loadingInterval = setInterval(() => {
+      if (!loadingScreen || !loadingProgress) {
+        clearInterval(loadingInterval); // Stop if elements are still null
+        console.error('Loading elements not found');
+        return;
+      }
+      loadValue += 5;
+      loadingProgress.style.width = loadValue + "%";
 
-    if (loadValue >= 100) {
-      clearInterval(loadingInterval);
-      loadingScreen.style.display = "none";
-      startScreen.style.display = "flex"; // Show Start Screen after loading
-    }
-  }, 150);
+      if (loadValue >= 100) {
+        clearInterval(loadingInterval);
+        loadingScreen.style.display = "none";
+        startScreen.style.display = "flex"; // Show Start Screen after loading
+      }
+    }, 150);
+  }
+
+  // Start loading animation after DOM is ready
+  startLoadingAnimation();
 
   // Start Button Click Event
   startButton.addEventListener("click", () => {
