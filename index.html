@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Memory Card Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Loading Screen with Loading Bar -->
+  <div id="loading-screen">
+    <div class="loading-container">
+      <div class="loading-text">Loading...</div>
+      <div class="loading-bar">
+        <div class="loading-progress" id="loading-progress"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Container (Hidden initially) -->
+  <div class="game-container" id="game-container">
+    <div class="header">
+      <div class="lives">Lives: <span id="lives">5</span></div>
+      <div class="coins">Coins: <span id="coins">0</span></div>
+      <div class="timer">Time: <span id="timer">30</span>s</div>
+    </div>
+    <div class="card-grid" id="cardGrid">
+      <!-- Cards will be dynamically generated here -->
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
