@@ -8,10 +8,11 @@ body {
   align-items: center;
   min-height: 100vh;
   background-color: #f0f8ff;
+  flex-direction: column;
 }
 
-/* Loading Screen with Custom Background */
-#loading-screen {
+/* Loading & Start Screen Background */
+#loading-screen, #start-screen {
   position: fixed;
   top: 0;
   left: 0;
@@ -21,13 +22,13 @@ body {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  background-image: url("loading.png"); /* Change this to your desired background */
+  background-image: url("loading.png");
   background-size: cover;
   background-position: center;
   z-index: 1000;
 }
 
-/* Loading Container */
+/* Loading Bar */
 .loading-container {
   text-align: center;
   color: white;
@@ -35,7 +36,6 @@ body {
   font-weight: bold;
 }
 
-/* Loading Bar */
 .loading-bar {
   width: 300px;
   height: 20px;
@@ -46,12 +46,33 @@ body {
   position: relative;
 }
 
-/* Loading Progress */
 .loading-progress {
   width: 0;
   height: 100%;
   background-color: #55b3ff;
   transition: width 0.1s ease-in-out;
+}
+
+/* Start Button */
+#start-screen {
+  display: none;
+}
+
+#start-button {
+  background: linear-gradient(to right, #ef7748, #f0cf3a);
+  border: none;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 15px 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 1);
+  transition: 0.3s;
+}
+
+#start-button:hover {
+  transform: scale(1.1);
 }
 
 /* Hide game container initially */
@@ -66,13 +87,42 @@ body {
   text-align: center;
 }
 
-/* Header */
+/* Header (Updated Spacing + Better Icon/Text Size) */
 .header {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
-  font-size: 1.2rem;
+  align-items: center;
+  font-size: 1.4rem;
   font-weight: bold;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* Icon Containers */
+.lives, .coins, .timer {
+  display: flex;
+  align-items: center;
+}
+
+/* Icons (Resized & Spaced) */
+.lives img, .coins img, .timer img {
+  width: 28px; /* Adjust icon size */
+  height: 28px;
+  margin-right: 8px;
+}
+
+/* Adjusting Spacing for Lives & Timer */
+.lives {
+  padding-left: 15px; /* Moves lives slightly right */
+}
+.timer {
+  padding-right: 15px; /* Moves timer slightly left */
 }
 
 /* Card Grid */
@@ -127,4 +177,61 @@ body {
   color: white;
   font-size: 2rem;
   transform: rotateY(180deg);
+}
+
+/* Pop-Up Styles */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: none;
+  z-index: 1100;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  position: relative;
+  z-index: 1200;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#close-popup, #continue-button, #next-button {
+  background: #db3434;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+  margin-right: 10px; /* Add space between the buttons */
+}
+
+/* Update background for continue-button */
+#continue-button {
+  background: #0eb116 url("film.png") no-repeat 10px center; /* Combine icon and background color */
+  background-size: 24px 24px; /* Adjust icon size */
+  padding-left: 50px; /* Add padding to account for icon */
+}
+
+/* No Lives Left Pop-Up */
+#no-lives-popup .popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#countdown-timer {
+  font-size: 2rem;
+  color: red;
+  margin-top: 20px;
 }

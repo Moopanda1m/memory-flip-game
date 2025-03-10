@@ -8,7 +8,7 @@
 </head>
 <body>
 
-  <!-- Loading Screen with Loading Bar -->
+  <!-- Loading Screen with Background -->
   <div id="loading-screen">
     <div class="loading-container">
       <div class="loading-text">Loading...</div>
@@ -18,15 +18,62 @@
     </div>
   </div>
 
-  <!-- Game Container (Hidden initially) -->
+  <!-- Start Button -->
+  <div id="start-screen">
+    <button id="start-button">START</button>
+  </div>
+
+  <!-- Game Container -->
   <div class="game-container" id="game-container">
+    
+    <!-- Header (Icons + Updated Spacing) -->
     <div class="header">
-      <div class="lives">Lives: <span id="lives">5</span></div>
-      <div class="coins">Coins: <span id="coins">0</span></div>
-      <div class="timer">Time: <span id="timer">30</span>s</div>
+      <div class="lives">
+        <img src="heart.png" alt="Life">
+        <span id="lives">5</span>
+      </div>
+      <div class="coins">
+        <img src="coin.png" alt="Coins">
+        <span id="coins">0</span>
+      </div>
+      <div class="timer">
+        <img src="timer.png" alt="Time">
+        <span id="timer">30</span>s
+      </div>
     </div>
+
+    <!-- Card Grid -->
     <div class="card-grid" id="cardGrid">
       <!-- Cards will be dynamically generated here -->
+    </div>
+
+  </div>
+
+  <!-- You Win Pop-Up -->
+  <div id="win-popup" class="popup">
+    <div class="popup-content">
+      <h2>You Win! 🎉</h2>
+      <p>Congratulations! You've matched all the cards.</p>
+      <button id="close-popup">Close</button>
+    </div>
+  </div>
+
+  <!-- You Lose Pop-Up -->
+  <div id="lose-popup" class="popup">
+    <div class="popup-content">
+      <h2>Time's Up! ⌛</h2>
+      <p>Better luck next time.</p>
+      <button id="continue-button">Continue</button>
+      <button id="next-button">Next</button>
+    </div>
+  </div>
+
+  <!-- No Lives Left Pop-Up -->
+  <div id="no-lives-popup" class="popup">
+    <div class="popup-content">
+      <h2>All Lives Used Up! 🕒</h2>
+      <p>Wait 3 hours to play again.</p>
+      <span id="countdown-timer">03:00:00</span>
     </div>
   </div>
 
