@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let countdownInterval;
   let waitingInterval;
   const totalPairs = 8;
+  let isRetry = false; // Flag to track retry after ad
 
   // DOM Elements
   const livesDisplay = document.getElementById('lives');
@@ -185,9 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Show Lose Popup
-  function showLosePopup() {
+  function showLosePopup(allowContinue = true) {
     pauseTimer(); // Ensure timer is paused
     losePopup.style.display = "flex";
+    continueButton.style.display = allowContinue ? "inline-block" : "none"; // Show/hide Continue button
   }
 
   // Show No Lives Left Popup
@@ -228,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (win) {
       showWinPopup(); // Show win popup without altering lives yet
     } else {
-      showLosePopup(); // Show lose popup without altering lives yet
+      showLosePopup(!isRetry); // Show lose popup, hide Continue if retry failed
     }
   }
 
@@ -239,6 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
     livesDisplay.textContent = lives;
     coins = parseInt(localStorage.getItem('coins'), 10) || 0; // Ensure coins are updated
     coinsDisplay.textContent = coins;
+    isRetry = false; // Reset retry flag for new life
     if (lives > 0) {
       initGame(); // Restart game if lives remain
     } else {
@@ -249,13 +252,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // Continue Button Click Event (Show Ad and Restart Game)
   continueButton.addEventListener("click", () => {
     losePopup.style.display = "none";
-    lives--; // Decrease lives only when user clicks
-    livesDisplay.textContent = lives;
-    if (lives > 0) {
-      initGame(); // Restart game if lives remain
-    } else {
-      showNoLivesPopup(); // Show no lives popup if lives hit zero
-    }
+    isRetry = true; // Mark as retry after ad
+    // Show rewarded ad
+    show_9069289().then(() => {
+      // Ad watched successfully, retry the level
+      initGame(); // Restart the current level
+      resumeTimer(); // Resume the timer
+    }).catch(() => {
+      // Ad failed to load or user didn’t watch, proceed to next life
+      isRetry = false; // Reset retry flag
+      lives--;
+      livesDisplay.textContent = lives;
+      if (lives > 0) {
+        initGame(); // Restart game with next life
+      } else {
+        showNoLivesPopup(); // Show no lives popup
+      }
+    });
   });
 
   // Next Button Click Event
@@ -263,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
     losePopup.style.display = "none";
     lives--; // Decrease lives only when user clicks
     livesDisplay.textContent = lives;
+    isRetry = false; // Reset retry flag for new life
     if (lives > 0) {
       initGame(); // Restart game if lives remain
     } else {

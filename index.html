@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory Card Game</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Telegram Mini Apps Analytics SDK -->
+  <script 
+    async 
+    src="https://tganalytics.xyz/index.js" 
+    onload="initAnalytics()" 
+    type="text/javascript"
+  ></script>
+  <script>
+    function initAnalytics() {
+      window.telegramAnalytics.init({
+        token: 'eyJhcHBfbmFtZSI6Im1vb3BhbmRhMW0iLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL01vb3BhbmRhYm90IiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vbW9vcGFuZGEudmVyY2VsLmFwcC8ifQ==!rv8JaPMJCa+9pBEXju8nPRVBfgqHg/eFdG4WUKmGvmM=',
+        appName: 'moopanda1m',
+      });
+    }
+  </script>
+  <!-- Monetag SDK Integration -->
+  <script src='//whephiwums.com/sdk.js' data-zone='9069289' data-sdk='show_9069289'></script>
 </head>
 <body>
 
@@ -21,6 +38,11 @@
   <!-- Start Button -->
   <div id="start-screen">
     <button id="start-button">START</button>
+    <!-- New Wallet Button (Showcase Only) -->
+    <button id="wallet-button">
+      <span class="wallet-text">Wallet</span>
+      <span class="coming-soon-text">(Coming Soon)</span>
+    </button>
   </div>
 
   <!-- Game Container -->
@@ -63,8 +85,10 @@
     <div class="popup-content">
       <h2>Time's Up! ⌛</h2>
       <p>Better luck next time.</p>
-      <button id="continue-button">Continue</button>
-      <button id="next-button">Next</button>
+      <div class="button-container">
+        <button id="continue-button">Continue</button>
+        <button id="next-button">Next</button>
+      </div>
     </div>
   </div>
 

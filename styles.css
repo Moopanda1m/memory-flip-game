@@ -75,6 +75,40 @@ body {
   transform: scale(1.1);
 }
 
+/* New Wallet Button (Showcase Only) */
+#wallet-button {
+  background: linear-gradient(to right, #ef7748, #f0cf3a);
+  border: none;
+  color: #333333;
+  opacity: 0.7;
+  font-weight: bold;
+  padding: 15px 40px;
+  border-radius: 10px;
+  cursor: default;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 1);
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 60px;
+}
+
+#wallet-button .wallet-text {
+  font-size: 24px;
+}
+
+#wallet-button .coming-soon-text {
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+/* Remove hover effect from wallet button */
+#wallet-button:hover {
+  transform: none;
+}
+
 /* Hide game container initially */
 #game-container {
   display: none;
@@ -112,17 +146,17 @@ body {
 
 /* Icons (Resized & Spaced) */
 .lives img, .coins img, .timer img {
-  width: 28px; /* Adjust icon size */
+  width: 28px;
   height: 28px;
   margin-right: 8px;
 }
 
 /* Adjusting Spacing for Lives & Timer */
 .lives {
-  padding-left: 15px; /* Moves lives slightly right */
+  padding-left: 15px;
 }
 .timer {
-  padding-right: 15px; /* Moves timer slightly left */
+  padding-right: 15px;
 }
 
 /* Card Grid */
@@ -173,10 +207,53 @@ body {
 }
 
 .back {
-  background-color: #e74c3c;
+  background-color: #f96464;
   color: white;
-  font-size: 2rem;
   transform: rotateY(180deg);
+  background-size: 70%;
+  background-position: center;
+  background-repeat: no-repeat;
+  font-size: 0;
+}
+
+/* Hint Container Styles */
+.hint-container {
+  margin-top: 80px; /* Increased from 15px to 30px for more padding */
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid #3498db;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  max-width: 90%;
+}
+
+.hint-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 10px 0;
+  text-align: center;
+}
+
+.hint-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hint-list li {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #333;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.hint-icon {
+  margin-right: 10px;
+  font-size: 1.2rem;
 }
 
 /* Pop-Up Styles */
@@ -205,6 +282,14 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Button container for side-by-side layout in Lose Popup */
+#lose-popup .button-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
 #close-popup, #continue-button, #next-button {
   background: #db3434;
   color: white;
@@ -212,15 +297,13 @@ body {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 20px;
-  margin-right: 10px; /* Add space between the buttons */
 }
 
 /* Update background for continue-button */
 #continue-button {
-  background: #0eb116 url("film.png") no-repeat 10px center; /* Combine icon and background color */
-  background-size: 24px 24px; /* Adjust icon size */
-  padding-left: 50px; /* Add padding to account for icon */
+  background: #0eb116 url("film.png") no-repeat 10px center;
+  background-size: 24px 24px;
+  padding-left: 50px;
 }
 
 /* No Lives Left Pop-Up */
