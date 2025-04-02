@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let countdownInterval;
   let waitingInterval;
   const totalPairs = 8;
-  let isRetry = false; // Flag to track retry after ad
+  let isRetry = false;
 
   // DOM Elements
   const livesDisplay = document.getElementById('lives');
@@ -29,13 +29,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextButton = document.getElementById('next-button');
   const noLivesPopup = document.getElementById('no-lives-popup');
   const countdownTimer = document.getElementById('countdown-timer');
+  const walletButton = document.getElementById('wallet-button');
+  const walletStatus = document.getElementById('wallet-status');
+
+  // Initialize Telegram Web App
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand(); // Make the app full-screen
+  tg.enableClosingConfirmation(); // Ask user before closing
+
+  // Enable Back Button
+  tg.BackButton.show();
+  tg.BackButton.onClick(() => {
+    if (gameContainer.style.display === 'block') {
+      gameContainer.style.display = 'none';
+      startScreen.style.display = 'flex';
+      pauseTimer();
+    } else {
+      tg.close(); // Close the app if on start screen
+    }
+  });
 
   // Initialize Loading Animation
   function startLoadingAnimation() {
     let loadValue = 0;
     const loadingInterval = setInterval(() => {
       if (!loadingScreen || !loadingProgress) {
-        clearInterval(loadingInterval); // Stop if elements are still null
+        clearInterval(loadingInterval);
         console.error('Loading elements not found');
         return;
       }
@@ -45,23 +65,34 @@ document.addEventListener('DOMContentLoaded', () => {
       if (loadValue >= 100) {
         clearInterval(loadingInterval);
         loadingScreen.style.display = "none";
-        startScreen.style.display = "flex"; // Show Start Screen after loading
+        startScreen.style.display = "flex";
       }
     }, 150);
   }
 
-  // Start loading animation after DOM is ready
   startLoadingAnimation();
 
   // Start Button Click Event
   startButton.addEventListener("click", () => {
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
-    initGame(); // Start the game when Start Button is clicked
+    initGame();
+    // Track game start event
+    window.telegramAnalytics.track('game_start');
   });
 
-  // Card Values
-  const cardValues = [...Array(totalPairs).keys(), ...Array(totalPairs).keys()];
+  // Card Values (images in public folder)
+  const cardImages = [
+    'public/card1.png',
+    'public/card2.png',
+    'public/card3.png',
+    'public/card4.png',
+    'public/card5.png',
+    'public/card6.png',
+    'public/card7.png',
+    'public/card8.png'
+  ];
+  const cardValues = [...cardImages, ...cardImages]; // Duplicate for pairs
 
   // Shuffle Function
   function shuffle(array) {
@@ -80,13 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
     shuffle(cardValues);
 
     // Generate Cards
-    cardValues.forEach((value) => {
+    cardValues.forEach((imagePath) => {
       const card = document.createElement('div');
       card.classList.add('card');
       card.innerHTML = 
         `<div class="card-inner">
           <div class="front"></div>
-          <div class="back">${value}</div>`;
+          <div class="back" style="background-image: url('${imagePath}');"></div>`;
       card.addEventListener('click', handleCardFlip);
       cardGrid.appendChild(card);
     });
@@ -100,14 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
     timer = 30;
     timerDisplay.textContent = timer;
     isGameRunning = true;
-    if (countdownInterval) clearInterval(countdownInterval); // Clear any existing interval
+    if (countdownInterval) clearInterval(countdownInterval);
     countdownInterval = setInterval(() => {
       if (timer > 0) {
         timer--;
         timerDisplay.textContent = timer;
       } else {
         clearInterval(countdownInterval);
-        endGame(false); // Time's up
+        endGame(false);
       }
     }, 1000);
   }
@@ -129,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
           timerDisplay.textContent = timer;
         } else {
           clearInterval(countdownInterval);
-          endGame(false); // Time's up
+          endGame(false);
         }
       }, 1000);
     }
@@ -140,7 +171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isGameRunning) return;
     const card = event.currentTarget;
 
-    // Ignore already flipped or matched cards
     if (card.classList.contains('flip') || flippedCards.length === 2) return;
 
     card.classList.add('flip');
@@ -154,20 +184,20 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check Match
   function checkMatch() {
     const [card1, card2] = flippedCards;
-    const value1 = card1.querySelector('.back').textContent;
-    const value2 = card2.querySelector('.back').textContent;
+    const value1 = card1.querySelector('.back').style.backgroundImage;
+    const value2 = card2.querySelector('.back').style.backgroundImage;
 
     if (value1 === value2) {
       matchedPairs++;
       coins += 50;
       coinsDisplay.textContent = coins;
-      localStorage.setItem('coins', coins); // Save coins
+      localStorage.setItem('coins', coins);
 
       if (matchedPairs === totalPairs) {
-        coins += 500; // Bonus for winning
+        coins += 500;
         coinsDisplay.textContent = coins;
-        localStorage.setItem('coins', coins); // Save coins
-        endGame(true); // Win condition
+        localStorage.setItem('coins', coins);
+        endGame(true);
       }
     } else {
       setTimeout(() => {
@@ -181,22 +211,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Show Win Popup
   function showWinPopup() {
-    pauseTimer(); // Ensure timer is paused
+    pauseTimer();
     winPopup.style.display = "flex";
   }
 
   // Show Lose Popup
   function showLosePopup(allowContinue = true) {
-    pauseTimer(); // Ensure timer is paused
+    pauseTimer();
     losePopup.style.display = "flex";
-    continueButton.style.display = allowContinue ? "inline-block" : "none"; // Show/hide Continue button
+    continueButton.style.display = allowContinue ? "inline-block" : "none";
   }
 
   // Show No Lives Left Popup
   function showNoLivesPopup() {
-    pauseTimer(); // Ensure timer is paused
+    pauseTimer();
     noLivesPopup.style.display = "flex";
-    let remainingTime = 10800; // 3 hours in seconds
+    let remainingTime = 10800;
     countdownTimer.textContent = formatTime(remainingTime);
 
     waitingInterval = setInterval(() => {
@@ -208,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         noLivesPopup.style.display = "none";
         lives = 5;
         livesDisplay.textContent = lives;
-        coins = parseInt(localStorage.getItem('coins'), 10) || 0; // Restore coins
+        coins = parseInt(localStorage.getItem('coins'), 10) || 0;
         coinsDisplay.textContent = coins;
         initGame();
       }
@@ -226,47 +256,44 @@ document.addEventListener('DOMContentLoaded', () => {
   // End Game
   function endGame(win) {
     isGameRunning = false;
-    pauseTimer(); // Ensure timer pauses
+    pauseTimer();
     if (win) {
-      showWinPopup(); // Show win popup without altering lives yet
+      showWinPopup();
     } else {
-      showLosePopup(!isRetry); // Show lose popup, hide Continue if retry failed
+      showLosePopup(!isRetry);
     }
   }
 
-  // Close Popup Button Click Event (Updated to deduct a life)
+  // Close Popup Button Click Event
   closePopupButton.addEventListener("click", () => {
     winPopup.style.display = "none";
-    lives--; // Deduct one life when closing the win popup
+    lives--;
     livesDisplay.textContent = lives;
-    coins = parseInt(localStorage.getItem('coins'), 10) || 0; // Ensure coins are updated
+    coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
-    isRetry = false; // Reset retry flag for new life
+    isRetry = false;
     if (lives > 0) {
-      initGame(); // Restart game if lives remain
+      initGame();
     } else {
-      showNoLivesPopup(); // Show no lives popup if lives hit zero
+      showNoLivesPopup();
     }
   });
 
-  // Continue Button Click Event (Show Ad and Restart Game)
+  // Continue Button Click Event
   continueButton.addEventListener("click", () => {
     losePopup.style.display = "none";
-    isRetry = true; // Mark as retry after ad
-    // Show rewarded ad
+    isRetry = true;
     show_9069289().then(() => {
-      // Ad watched successfully, retry the level
-      initGame(); // Restart the current level
-      resumeTimer(); // Resume the timer
+      initGame();
+      resumeTimer();
     }).catch(() => {
-      // Ad failed to load or user didn’t watch, proceed to next life
-      isRetry = false; // Reset retry flag
+      isRetry = false;
       lives--;
       livesDisplay.textContent = lives;
       if (lives > 0) {
-        initGame(); // Restart game with next life
+        initGame();
       } else {
-        showNoLivesPopup(); // Show no lives popup
+        showNoLivesPopup();
       }
     });
   });
@@ -274,13 +301,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Next Button Click Event
   nextButton.addEventListener("click", () => {
     losePopup.style.display = "none";
-    lives--; // Decrease lives only when user clicks
+    lives--;
     livesDisplay.textContent = lives;
-    isRetry = false; // Reset retry flag for new life
+    isRetry = false;
     if (lives > 0) {
-      initGame(); // Restart game if lives remain
+      initGame();
     } else {
-      showNoLivesPopup(); // Show no lives popup if lives hit zero
+      showNoLivesPopup();
     }
   });
 
@@ -288,5 +315,32 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('load', () => {
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
+  });
+
+  // TON Connect Wallet Integration
+  const tonConnectUI = new TONConnectUI({
+    manifestUrl: 'https://html-rojtoafm0-moopandas-projects.vercel.app/tonconnect-manifest.json',
+    twaReturnUrl: 'https://t.me/Moopandabot'
+  });
+  
+  // Handle Wallet Connection Status
+  tonConnectUI.onStatusChange(wallet => {
+    if (wallet) {
+      const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
+      walletStatus.textContent = `Connected: ${shortAddress}`;
+    } else {
+      walletStatus.textContent = 'Wallet not connected';
+    }
+  });
+
+  // Wallet Button Click Event
+  walletButton.addEventListener('click', async () => {
+    try {
+      await tonConnectUI.connectWallet();
+      walletStatus.textContent = 'Connecting...';
+    } catch (error) {
+      console.error('Wallet connection error:', error);
+      walletStatus.textContent = 'Failed to connect. Try again.';
+    }
   });
 });
