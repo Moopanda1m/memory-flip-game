@@ -319,10 +319,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // TON Connect Wallet Integration
   const tonConnectUI = new TONConnectUI({
-    manifestUrl: 'https://html-rojtoafm0-moopandas-projects.vercel.app/tonconnect-manifest.json',
+    manifestUrl: 'https://memory-flip-game-5ftyln5lu-moopandas-projects.vercel.app/tonconnect-manifest.json',
     twaReturnUrl: 'https://t.me/Moopandabot'
   });
-  
+
   // Handle Wallet Connection Status
   tonConnectUI.onStatusChange(wallet => {
     if (wallet) {
@@ -335,9 +335,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Wallet Button Click Event
   walletButton.addEventListener('click', async () => {
+    walletStatus.textContent = 'Connecting...';
     try {
       await tonConnectUI.connectWallet();
-      walletStatus.textContent = 'Connecting...';
+      // Update status after connection attempt
+      const wallet = tonConnectUI.wallet;
+      if (wallet) {
+        const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
+        walletStatus.textContent = `Connected: ${shortAddress}`;
+      } else {
+        walletStatus.textContent = 'Wallet not connected';
+      }
     } catch (error) {
       console.error('Wallet connection error:', error);
       walletStatus.textContent = 'Failed to connect. Try again.';
