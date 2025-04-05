@@ -1,4 +1,9 @@
 /* General Styles */
+html {
+  overflow: hidden; /* Added to prevent scrolling at the root level */
+  overscroll-behavior: none; /* Added to prevent touch scrolling */
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -10,6 +15,8 @@ body {
   background-color: var(--tg-theme-bg-color, #f0f8ff); /* Telegram theme background */
   color: var(--tg-theme-text-color, #000000); /* Telegram theme text color */
   flex-direction: column;
+  overflow: hidden; /* Already added, kept to ensure no scrolling */
+  overscroll-behavior: none; /* Added to prevent touch scrolling */
 }
 
 /* Loading & Start Screen Background */
@@ -116,6 +123,8 @@ body {
 /* Hide game container initially */
 #game-container {
   display: none;
+  max-height: 100vh; /* Added to ensure it doesn't exceed viewport height */
+  overflow: hidden; /* Added to prevent internal scrolling */
 }
 
 /* Game Container */
@@ -168,6 +177,8 @@ body {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
+  max-height: calc(100vh - 150px); /* Added to fit within viewport, accounting for header and hint */
+  overflow: hidden; /* Added to prevent scrolling within the grid */
 }
 
 .card {

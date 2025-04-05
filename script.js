@@ -319,8 +319,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // TON Connect Wallet Integration
   const tonConnectUI = new TONConnectUI({
-    manifestUrl: 'https://memory-flip-game-5ftyln5lu-moopandas-projects.vercel.app/tonconnect-manifest.json',
-    twaReturnUrl: 'https://t.me/Moopandabot'
+    manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
+    twaReturnUrl: 'https://t.me/flipgame30bot'
   });
 
   // Handle Wallet Connection Status
