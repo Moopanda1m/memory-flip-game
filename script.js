@@ -320,11 +320,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // TON Connect Wallet Integration
   const tonConnectUI = new TONConnectUI({
     manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
-    twaReturnUrl: 'https://t.me/flipgame30bot'
+    twaReturnUrl: 'https://t.me/flipgame30bot' // Updated to match your bot
   });
 
   // Handle Wallet Connection Status
   tonConnectUI.onStatusChange(wallet => {
+    console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
     if (wallet) {
       const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
       walletStatus.textContent = `Connected: ${shortAddress}`;
@@ -335,16 +336,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Wallet Button Click Event
   walletButton.addEventListener('click', async () => {
+    console.log('Wallet button clicked');
     walletStatus.textContent = 'Connecting...';
     try {
       await tonConnectUI.connectWallet();
-      // Update status after connection attempt
+      console.log('connectWallet called');
       const wallet = tonConnectUI.wallet;
       if (wallet) {
         const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
         walletStatus.textContent = `Connected: ${shortAddress}`;
+        console.log('Wallet connected:', shortAddress);
       } else {
         walletStatus.textContent = 'Wallet not connected';
+        console.log('No wallet connected');
       }
     } catch (error) {
       console.error('Wallet connection error:', error);
