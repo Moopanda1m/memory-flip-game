@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextButton = document.getElementById('next-button');
   const noLivesPopup = document.getElementById('no-lives-popup');
   const countdownTimer = document.getElementById('countdown-timer');
-  const walletButton = document.getElementById('wallet-button');
   const walletStatus = document.getElementById('wallet-status');
 
   // Initialize Telegram Web App
@@ -320,39 +319,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // TON Connect Wallet Integration
   const tonConnectUI = new TONConnectUI({
     manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
-    twaReturnUrl: 'https://t.me/flipgame30bot' // Updated to match your bot
+    twaReturnUrl: 'https://t.me/flipgame30bot',
+    buttonRootId: 'ton-connect'
   });
 
   // Handle Wallet Connection Status
   tonConnectUI.onStatusChange(wallet => {
     console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
+    const walletStatus = document.getElementById('wallet-status');
     if (wallet) {
       const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
       walletStatus.textContent = `Connected: ${shortAddress}`;
     } else {
       walletStatus.textContent = 'Wallet not connected';
-    }
-  });
-
-  // Wallet Button Click Event
-  walletButton.addEventListener('click', async () => {
-    console.log('Wallet button clicked');
-    walletStatus.textContent = 'Connecting...';
-    try {
-      await tonConnectUI.connectWallet();
-      console.log('connectWallet called');
-      const wallet = tonConnectUI.wallet;
-      if (wallet) {
-        const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
-        walletStatus.textContent = `Connected: ${shortAddress}`;
-        console.log('Wallet connected:', shortAddress);
-      } else {
-        walletStatus.textContent = 'Wallet not connected';
-        console.log('No wallet connected');
-      }
-    } catch (error) {
-      console.error('Wallet connection error:', error);
-      walletStatus.textContent = 'Failed to connect. Try again.';
     }
   });
 });
