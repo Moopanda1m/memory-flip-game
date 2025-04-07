@@ -3,5 +3,7 @@
   "name": "Memory Flip Game",
   "iconUrl": "https://memoryflip-game-app.vercel.app/public/icon.png",
   "termsOfUseUrl": "https://memoryflip-game-app.vercel.app/public/terms.html",
-  "privacyPolicyUrl": "https://memoryflip-game-app.vercel.app/public/privacy.html"
+  "privacyPolicyUrl": "https://memoryflip-game-app.vercel.app/public/privacy.html",
+  "versions": ["2.0"],
+  "telegram_app_url": "https://t.me/flipgame30bot/app"
 }
