@@ -7,8 +7,8 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: var(--tg-theme-bg-color, #f0f8ff); /* Telegram theme background */
-  color: var(--tg-theme-text-color, #000000); /* Telegram theme text color */
+  background-color: var(--tg-theme-bg-color, #f0f8ff);
+  color: var(--tg-theme-text-color, #000000);
   flex-direction: column;
 }
 
@@ -120,7 +120,7 @@ body {
   text-align: center;
 }
 
-/* Header (Updated Spacing + Better Icon/Text Size) */
+/* Header */
 .header {
   position: absolute;
   top: 10px;
@@ -143,14 +143,14 @@ body {
   align-items: center;
 }
 
-/* Icons (Resized & Spaced) */
+/* Icons */
 .lives img, .coins img, .timer img {
   width: 28px;
   height: 28px;
   margin-right: 8px;
 }
 
-/* Adjusting Spacing for Lives & Timer */
+/* Adjusting Spacing */
 .lives {
   padding-left: 15px;
 }
