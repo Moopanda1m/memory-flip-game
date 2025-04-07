@@ -1,9 +1,7 @@
 {
   "url": "https://memoryflip-game-app.vercel.app",
-  "name": "Memory Flip Game",
+  "name": "Memory Card Game",
   "iconUrl": "https://memoryflip-game-app.vercel.app/public/icon.png",
   "termsOfUseUrl": "https://memoryflip-game-app.vercel.app/public/terms.html",
-  "privacyPolicyUrl": "https://memoryflip-game-app.vercel.app/public/privacy.html",
-  "versions": ["2.0"],
-  "telegram_app_url": "https://t.me/flipgame30bot/app"
+  "privacyPolicyUrl": "https://memoryflip-game-app.vercel.app/public/privacy.html"
 }

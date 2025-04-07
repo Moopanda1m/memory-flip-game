@@ -29,30 +29,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const nextButton = document.getElementById('next-button');
   const noLivesPopup = document.getElementById('no-lives-popup');
   const countdownTimer = document.getElementById('countdown-timer');
-  const walletButton = document.getElementById('wallet-button');
   const walletStatus = document.getElementById('wallet-status');
 
   // Initialize Telegram Web App
-  const tg = window.Telegram?.WebApp;
-  if (tg) {
-    tg.ready();
-    tg.expand(); // Make the app full-screen
-    tg.enableClosingConfirmation(); // Ask user before closing
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand(); // Make the app full-screen
+  tg.enableClosingConfirmation(); // Ask user before closing
 
-    // Enable Back Button
-    tg.BackButton.show();
-    tg.BackButton.onClick(() => {
-      if (gameContainer.style.display === 'block') {
-        gameContainer.style.display = 'none';
-        startScreen.style.display = 'flex';
-        pauseTimer();
-      } else {
-        tg.close(); // Close the app if on start screen
-      }
-    });
-  } else {
-    console.error('Telegram WebApp not available');
-  }
+  // Enable Back Button
+  tg.BackButton.show();
+  tg.BackButton.onClick(() => {
+    if (gameContainer.style.display === 'block') {
+      gameContainer.style.display = 'none';
+      startScreen.style.display = 'flex';
+      pauseTimer();
+    } else {
+      tg.close(); // Close the app if on start screen
+    }
+  });
 
   // Initialize Loading Animation
   function startLoadingAnimation() {
@@ -76,109 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   startLoadingAnimation();
 
-  // TON Connect Integration
-  let tonConnectUI;
-  
-  try {
-    // Initialize TON Connect with proper configuration
-    tonConnectUI = new window.TONConnectUI.TONConnectUI({
-      manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
-      buttonRootId: 'ton-connect-button',
-      hideWalletList: true // Hide the default wallet list UI
-    });
-    
-    console.log('TON Connect initialized successfully');
-    
-    // Handle Wallet Connection Status
-    tonConnectUI.onStatusChange((wallet) => {
-      console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
-      if (wallet) {
-        const address = wallet.account.address;
-        const shortAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
-        walletStatus.textContent = `Connected: ${shortAddress}`;
-        walletStatus.style.color = '#4CAF50'; // Green color for connected status
-        
-        // Save wallet connection to localStorage
-        localStorage.setItem('walletConnected', 'true');
-        localStorage.setItem('walletAddress', address);
-        
-        // Update UI for connected wallet
-        walletButton.style.opacity = '1';
-        
-        // Track wallet connection event
-        if (window.telegramAnalytics) {
-          window.telegramAnalytics.track('wallet_connected');
-        }
-      } else {
-        walletStatus.textContent = 'Wallet not connected';
-        walletStatus.style.color = 'white';
-        localStorage.removeItem('walletConnected');
-        localStorage.removeItem('walletAddress');
-        walletButton.style.opacity = '0.7';
-      }
-    });
-  } catch (error) {
-    console.error('Error initializing TON Connect:', error);
-    walletStatus.textContent = 'Wallet service unavailable';
-  }
-
-  // Wallet Button Click Event
-  walletButton.addEventListener('click', async () => {
-    console.log('Wallet button clicked');
-    
-    if (!tonConnectUI) {
-      console.error('TON Connect UI not initialized');
-      walletStatus.textContent = 'Wallet service unavailable';
-      return;
-    }
-    
-    try {
-      walletStatus.textContent = 'Connecting...';
-      
-      if (tonConnectUI.connected) {
-        // If already connected, disconnect
-        await tonConnectUI.disconnect();
-        walletStatus.textContent = 'Wallet disconnected';
-      } else {
-        // Show modal to connect wallet
-        await tonConnectUI.openModal();
-      }
-    } catch (error) {
-      console.error('Wallet connection error:', error);
-      walletStatus.textContent = 'Connection failed. Try again.';
-    }
-  });
-
-  // Check for saved wallet connection on load
-  window.addEventListener('load', () => {
-    // Restore coins from localStorage
-    coins = parseInt(localStorage.getItem('coins'), 10) || 0;
-    coinsDisplay.textContent = coins;
-    
-    // Check for previously connected wallet
-    const walletConnected = localStorage.getItem('walletConnected') === 'true';
-    if (walletConnected && tonConnectUI) {
-      // Auto-reconnect if previously connected
-      const walletAddress = localStorage.getItem('walletAddress');
-      if (walletAddress) {
-        const shortAddress = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-        walletStatus.textContent = `Reconnecting: ${shortAddress}`;
-        
-        // Don't immediately reconnect - wait for user action
-        walletButton.style.opacity = '1';
-      }
-    }
-  });
-
   // Start Button Click Event
   startButton.addEventListener("click", () => {
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
     initGame();
     // Track game start event
-    if (window.telegramAnalytics) {
-      window.telegramAnalytics.track('game_start');
-    }
+    window.telegramAnalytics.track('game_start');
   });
 
   // Card Values (images in public folder)
@@ -283,8 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Check Match
   function checkMatch() {
-    if (flippedCards.length !== 2) return;
-    
     const [card1, card2] = flippedCards;
     const value1 = card1.querySelector('.back').style.backgroundImage;
     const value2 = card2.querySelector('.back').style.backgroundImage;
@@ -299,14 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
         coins += 500;
         coinsDisplay.textContent = coins;
         localStorage.setItem('coins', coins);
-        
-        // If wallet is connected, we could send a reward
-        if (tonConnectUI && tonConnectUI.connected) {
-          console.log('User won with connected wallet!');
-          // Here you could implement a function to send TON rewards
-          // This would require backend integration
-        }
-        
         endGame(true);
       }
     } else {
@@ -393,23 +282,10 @@ document.addEventListener('DOMContentLoaded', () => {
   continueButton.addEventListener("click", () => {
     losePopup.style.display = "none";
     isRetry = true;
-    
-    if (typeof show_9069289 === 'function') {
-      show_9069289().then(() => {
-        initGame();
-        resumeTimer();
-      }).catch(() => {
-        isRetry = false;
-        lives--;
-        livesDisplay.textContent = lives;
-        if (lives > 0) {
-          initGame();
-        } else {
-          showNoLivesPopup();
-        }
-      });
-    } else {
-      console.error('Ad function not available');
+    show_9069289().then(() => {
+      initGame();
+      resumeTimer();
+    }).catch(() => {
       isRetry = false;
       lives--;
       livesDisplay.textContent = lives;
@@ -418,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         showNoLivesPopup();
       }
-    }
+    });
   });
 
   // Next Button Click Event
@@ -433,4 +309,31 @@ document.addEventListener('DOMContentLoaded', () => {
       showNoLivesPopup();
     }
   });
+
+  // On Load, Restore Coins
+  window.addEventListener('load', () => {
+    coins = parseInt(localStorage.getItem('coins'), 10) || 0;
+    coinsDisplay.textContent = coins;
+  });
+
+  // TON Connect Wallet Integration
+  try {
+    const tonConnectUI = new TONConnectUI({
+      manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
+      twaReturnUrl: 'https://t.me/flipgame30bot',
+      buttonRootId: 'ton-connect' // Added to render the TON Connect button
+    });
+    tonConnectUI.onStatusChange(wallet => {
+      console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
+      if (wallet) {
+        const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
+        walletStatus.textContent = `Connected: ${shortAddress}`;
+      } else {
+        walletStatus.textContent = 'Wallet not connected';
+      }
+    });
+  } catch (error) {
+    console.error('TON Connect UI initialization failed:', error);
+    walletStatus.textContent = 'Wallet connection unavailable';
+  }
 });

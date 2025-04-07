@@ -76,35 +76,6 @@ body {
   transform: scale(1.1);
 }
 
-/* New Wallet Button (Showcase Only) */
-#wallet-button {
-  background: linear-gradient(to right, #ef7748, #f0cf3a);
-  border: none;
-  color: #333333;
-  opacity: 0.7;
-  font-weight: bold;
-  padding: 15px 40px;
-  border-radius: 10px;
-  cursor: pointer; /* Changed to pointer to indicate clickability */
-  box-shadow: 3px 3px 8px rgba(0, 0, 0, 1);
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 160px;
-  height: 60px;
-}
-
-#wallet-button .wallet-text {
-  font-size: 24px;
-}
-
-/* Remove hover effect from wallet button */
-#wallet-button:hover {
-  transform: scale(1.1); /* Added hover effect to indicate interactivity */
-}
-
 /* Wallet Status */
 #wallet-status {
   margin-top: 10px;
