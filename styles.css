@@ -7,8 +7,8 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: var(--tg-theme-bg-color, #f0f8ff);
-  color: var(--tg-theme-text-color, #000000);
+  background-color: var(--tg-theme-bg-color, #f0f8ff); /* Telegram theme background */
+  color: var(--tg-theme-text-color, #000000); /* Telegram theme text color */
   flex-direction: column;
 }
 
@@ -76,8 +76,8 @@ body {
   transform: scale(1.1);
 }
 
-/* TON Connect Button */
-#ton-connect {
+/* New Wallet Button (Showcase Only) */
+#wallet-button {
   background: linear-gradient(to right, #ef7748, #f0cf3a);
   border: none;
   color: #333333;
@@ -85,7 +85,7 @@ body {
   font-weight: bold;
   padding: 15px 40px;
   border-radius: 10px;
-  cursor: pointer;
+  cursor: pointer; /* Changed to pointer to indicate clickability */
   box-shadow: 3px 3px 8px rgba(0, 0, 0, 1);
   margin-top: 10px;
   display: flex;
@@ -96,8 +96,13 @@ body {
   height: 60px;
 }
 
-#ton-connect:hover {
-  transform: scale(1.1);
+#wallet-button .wallet-text {
+  font-size: 24px;
+}
+
+/* Remove hover effect from wallet button */
+#wallet-button:hover {
+  transform: scale(1.1); /* Added hover effect to indicate interactivity */
 }
 
 /* Wallet Status */
@@ -120,7 +125,7 @@ body {
   text-align: center;
 }
 
-/* Header */
+/* Header (Updated Spacing + Better Icon/Text Size) */
 .header {
   position: absolute;
   top: 10px;
@@ -143,14 +148,14 @@ body {
   align-items: center;
 }
 
-/* Icons */
+/* Icons (Resized & Spaced) */
 .lives img, .coins img, .timer img {
   width: 28px;
   height: 28px;
   margin-right: 8px;
 }
 
-/* Adjusting Spacing */
+/* Adjusting Spacing for Lives & Timer */
 .lives {
   padding-left: 15px;
 }

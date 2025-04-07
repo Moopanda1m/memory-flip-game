@@ -5,26 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory Card Game</title>
   <link rel="stylesheet" href="styles.css">
+  
   <!-- Telegram Mini Apps Analytics SDK -->
-  <script 
-    async 
-    src="https://tganalytics.xyz/index.js" 
-    onload="initAnalytics()" 
-    type="text/javascript"
+  <script
+     async
+     src="https://tganalytics.xyz/index.js"
+     onload="initAnalytics()"
+     type="text/javascript"
   ></script>
   <script>
     function initAnalytics() {
       window.telegramAnalytics.init({
-        token: 'NEW_TOKEN_HERE', // Replace with the token from @DataChief_bot using https://memory-flip-game-5ftyln5lu-moopandas-projects.vercel.app
+        token: 'NEW_TOKEN_HERE', // Replace with the token from @DataChief_bot
         appName: 'memoryflipgame',
       });
       window.telegramAnalytics.track('app_launch');
     }
   </script>
+  
   <!-- Monetag SDK Integration -->
   <script src='//whephiwums.com/sdk.js' data-zone='9069289' data-sdk='show_9069289'></script>
+  
   <!-- TON Connect UI Library -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@1.0.0/dist/tonconnect-ui.min.js"></script>
+  
   <!-- Telegram Web App Script -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -32,22 +36,23 @@
   <!-- Loading Screen with Background -->
   <div id="loading-screen">
     <div class="loading-container">
-      <div class="loading-text">Loading...</div>
+      <div class="loading-text">Loading....</div>
       <div class="loading-bar">
         <div class="loading-progress" id="loading-progress"></div>
       </div>
     </div>
   </div>
-
+  
   <!-- Start Screen -->
   <div id="start-screen">
     <button id="start-button">START</button>
     <button id="wallet-button">
-      <span class="wallet-text">Test Wallet</span>
+      <span class="wallet-text">Connect Wallet</span>
     </button>
     <p id="wallet-status">Wallet not connected</p>
+    <div id="ton-connect-button" style="display: none;"></div>
   </div>
-
+  
   <!-- Game Container -->
   <div class="game-container" id="game-container">
     <!-- Header -->
@@ -65,10 +70,10 @@
         <span id="timer">30</span>s
       </div>
     </div>
-
+    
     <!-- Card Grid -->
     <div class="card-grid" id="cardGrid"></div>
-
+    
     <!-- Hint Text -->
     <div class="hint-container" id="game-hint">
       <h3 class="hint-title">How to Play</h3>
@@ -76,10 +81,11 @@
         <li><span class="hint-icon">🎴</span> Flip matching cards to win coins.</li>
         <li><span class="hint-icon">📺</span> Watch ads to play again.</li>
         <li><span class="hint-icon">⏱️</span> Flip all cards within time for +500 coins.</li>
+        <li><span class="hint-icon">💰</span> Connect your TON wallet to earn rewards.</li>
       </ul>
     </div>
   </div>
-
+  
   <!-- Pop-Ups -->
   <div id="win-popup" class="popup">
     <div class="popup-content">
@@ -88,7 +94,7 @@
       <button id="close-popup">Close</button>
     </div>
   </div>
-
+  
   <div id="lose-popup" class="popup">
     <div class="popup-content">
       <h2>Time's Up! ⌛</h2>
@@ -99,7 +105,7 @@
       </div>
     </div>
   </div>
-
+  
   <div id="no-lives-popup" class="popup">
     <div class="popup-content">
       <h2>All Lives Used Up! 🕒</h2>
@@ -107,7 +113,7 @@
       <span id="countdown-timer">03:00:00</span>
     </div>
   </div>
-
+  
   <script src="script.js"></script>
 </body>
 </html>
