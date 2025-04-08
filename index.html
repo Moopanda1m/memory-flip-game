@@ -5,6 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory Card Game</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Preload TON Connect UI Script -->
+  <link rel="preload" href="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" as="script">
+  <!-- TON Connect UI Library with Fallback -->
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer onload="checkTONConnectLoaded()" onerror="loadTONConnectFallback()"></script>
+  <script>
+    let tonConnectLoaded = false;
+    function checkTONConnectLoaded() {
+      tonConnectLoaded = true;
+      console.log('TON Connect UI loaded successfully');
+    }
+    function loadTONConnectFallback() {
+      const fallbackScript = document.createElement('script');
+      fallbackScript.src = 'https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js';
+      fallbackScript.defer = true;
+      fallbackScript.onload = checkTONConnectLoaded;
+      document.head.appendChild(fallbackScript);
+      console.warn('Falling back to jsDelivr CDN for TON Connect UI');
+    }
+  </script>
   <!-- Telegram Mini Apps Analytics SDK -->
   <script 
     async 
@@ -14,17 +33,25 @@
   ></script>
   <script>
     function initAnalytics() {
-      window.telegramAnalytics.init({
-        token: 'NEW_TOKEN_HERE', // Replace with the token from @DataChief_bot using https://memory-flip-game-5ftyln5lu-moopandas-projects.vercel.app
-        appName: 'memoryflipgame',
-      });
-      window.telegramAnalytics.track('app_launch');
+      if (window.telegramAnalytics && typeof window.telegramAnalytics.init === 'function') {
+        window.telegramAnalytics.init({
+          token: 'eyJhcHBfbmFtZSI6ImZsaXBnYW1lMzNib3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2ZsaXBnYW1lMzNib3QiLCJhcHBfZG9tYWluIjoiaHR0cHM6Ly9tZW1vcnlmbGlwLWdhbWUtYXBwLnZlcmNlbC5hcHAifQ==!iYlGRCwy0v3rQBuuJ+4uZ+3lXjXm02Ksf35hLaCVfJw=',
+          appName: 'flipgame30bot',
+        });
+        console.log('Analytics initialized with token');
+        if (typeof window.telegramAnalytics.track === 'function') {
+          window.telegramAnalytics.track('app_launch');
+          console.log('Tracked app_launch event');
+        } else {
+          console.error('telegramAnalytics.track is not available');
+        }
+      } else {
+        console.error('telegramAnalytics is not available');
+      }
     }
   </script>
   <!-- Monetag SDK Integration -->
   <script src='//whephiwums.com/sdk.js' data-zone='9069289' data-sdk='show_9069289'></script>
-  <!-- TON Connect UI Library -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <!-- Telegram Web App Script -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -42,7 +69,7 @@
   <!-- Start Screen -->
   <div id="start-screen">
     <button id="start-button">START</button>
-    <div id="ton-connect"></div> <!-- Replaced wallet-button with ton-connect for TON Connect UI -->
+    <div id="ton-connect-root"></div> <!-- ✅ THIS is the added TON Connect button placeholder -->
     <p id="wallet-status">Wallet not connected</p>
   </div>
 
@@ -106,6 +133,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js"></script> <!-- Moved to end of body -->
 </body>
 </html>

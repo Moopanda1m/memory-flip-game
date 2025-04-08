@@ -1,5 +1,47 @@
-// Wait for DOM to load and ensure TON Connect UI is available
-window.onload = function () {
+// Ensure DOM is fully loaded before executing
+document.addEventListener('DOMContentLoaded', () => {
+  // Retry mechanism for TON Connect UI
+  function initializeTONConnect(retries = 3, delay = 2000) {
+    const tonConnectRoot = document.getElementById('ton-connect-root');
+    if (!tonConnectRoot) {
+      console.error('ton-connect-root element not found in DOM');
+      return;
+    }
+
+    if (typeof TONConnectUI !== 'undefined' && window.tonConnectLoaded) {
+      try {
+        const tonConnectUI = new TONConnectUI({
+          manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
+          twaReturnUrl: 'https://t.me/flipgame30bot',
+          buttonRootId: 'ton-connect-root'
+        });
+        tonConnectUI.onStatusChange(wallet => {
+          console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
+          const walletStatus = document.getElementById('wallet-status');
+          if (wallet) {
+            const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
+            walletStatus.textContent = `Connected: ${shortAddress}`;
+          } else {
+            walletStatus.textContent = 'Wallet not connected';
+          }
+        });
+        console.log('TON Connect UI initialized successfully');
+        tonConnectRoot.classList.remove('hidden'); // Ensure button is visible
+      } catch (error) {
+        console.error('TON Connect UI initialization failed:', error);
+        const walletStatus = document.getElementById('wallet-status');
+        walletStatus.textContent = 'Wallet connection unavailable';
+      }
+    } else if (retries > 0) {
+      console.warn(`TONConnectUI not defined, retrying (${retries} attempts left)...`);
+      setTimeout(() => initializeTONConnect(retries - 1, delay), delay);
+    } else {
+      console.error('TONConnectUI failed to load after retries. Ensure network and script availability.');
+      const walletStatus = document.getElementById('wallet-status');
+      walletStatus.textContent = 'Wallet connection unavailable';
+    }
+  }
+
   // Game Variables
   let lives = 5;
   let coins = 0;
@@ -65,6 +107,8 @@ window.onload = function () {
         clearInterval(loadingInterval);
         loadingScreen.style.display = "none";
         startScreen.style.display = "flex";
+        gameContainer.classList.remove('hidden'); // Ensure game container is visible
+        initializeTONConnect(); // Initialize TON Connect after loading
       }
     }, 150);
   }
@@ -79,6 +123,7 @@ window.onload = function () {
     // Track game start event (safe call)
     if (window.telegramAnalytics && typeof window.telegramAnalytics.track === 'function') {
       window.telegramAnalytics.track('game_start');
+      console.log('Tracked game_start event');
     } else {
       console.warn('telegramAnalytics.track is not available for game_start');
     }
@@ -319,30 +364,4 @@ window.onload = function () {
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
   });
-
-  // TON Connect Wallet Integration (deferred to window.onload)
-  if (typeof TONConnectUI !== 'undefined') {
-    try {
-      const tonConnectUI = new TONConnectUI({
-        manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
-        twaReturnUrl: 'https://t.me/flipgame30bot',
-        buttonRootId: 'ton-connect-root'
-      });
-      tonConnectUI.onStatusChange(wallet => {
-        console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
-        if (wallet) {
-          const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
-          walletStatus.textContent = `Connected: ${shortAddress}`;
-        } else {
-          walletStatus.textContent = 'Wallet not connected';
-        }
-      });
-    } catch (error) {
-      console.error('TON Connect UI initialization failed:', error);
-      walletStatus.textContent = 'Wallet connection unavailable';
-    }
-  } else {
-    console.error('TONConnectUI is not defined. Ensure the script loaded correctly.');
-    walletStatus.textContent = 'Wallet connection unavailable';
-  }
-};
+});

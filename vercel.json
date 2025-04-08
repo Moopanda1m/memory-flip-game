@@ -7,6 +7,10 @@
   ],
   "rewrites": [
     {
+      "source": "/tonconnect-manifest.json",
+      "destination": "/tonconnect-manifest.json"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
