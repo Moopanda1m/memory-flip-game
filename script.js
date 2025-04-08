@@ -1,48 +1,54 @@
 // Ensure DOM is fully loaded before executing
 document.addEventListener('DOMContentLoaded', () => {
-  // Retry mechanism for TON Connect UI
-  function initializeTONConnect(retries = 3, delay = 2000) {
+  // Retry mechanism for TON Connect UI (called externally after load check)
+  function initializeTONConnect() {
     const tonConnectRoot = document.getElementById('ton-connect-root');
     if (!tonConnectRoot) {
       console.error('ton-connect-root element not found in DOM');
       return;
     }
 
-    if (typeof TONConnectUI !== 'undefined' && window.tonConnectLoaded) {
+    if (typeof window.TON_CONNECT_UI !== 'undefined' && typeof window.TON_CONNECT_UI.TonConnectUI !== 'undefined' && window.tonConnectLoaded) {
       try {
-        const tonConnectUI = new TONConnectUI({
+        const tonConnectUI = new window.TON_CONNECT_UI.TonConnectUI({
           manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
-          twaReturnUrl: 'https://t.me/flipgame30bot',
-          buttonRootId: 'ton-connect-root'
+          buttonRootId: 'ton-connect-root',
+          twaReturnUrl: 'https://t.me/flipgame30bot'
         });
-        tonConnectUI.onStatusChange(wallet => {
-          console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
-          const walletStatus = document.getElementById('wallet-status');
-          if (wallet) {
-            const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
-            walletStatus.textContent = `Connected: ${shortAddress}`;
+        // Wait for connection restoration before proceeding
+        tonConnectUI.connectionRestored.then(restored => {
+          if (restored) {
+            console.log('Connection restored successfully. Wallet:', tonConnectUI.wallet);
           } else {
-            walletStatus.textContent = 'Wallet not connected';
+            console.log('Connection restoration failed. Check network or bridge.');
           }
+          // Set up status change listener
+          tonConnectUI.onStatusChange(wallet => {
+            console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
+            const walletStatus = document.getElementById('wallet-status');
+            if (wallet) {
+              const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
+              walletStatus.textContent = `Connected: ${shortAddress}`;
+            } else {
+              walletStatus.textContent = 'Wallet not connected';
+            }
+            tonConnectRoot.classList.remove('hidden'); // Ensure button is visible after status update
+          });
+          console.log('TON Connect UI initialized successfully');
+        }).catch(error => {
+          console.error('Error during connection restoration:', error);
         });
-        console.log('TON Connect UI initialized successfully');
-        tonConnectRoot.classList.remove('hidden'); // Ensure button is visible
       } catch (error) {
         console.error('TON Connect UI initialization failed:', error);
         const walletStatus = document.getElementById('wallet-status');
         walletStatus.textContent = 'Wallet connection unavailable';
       }
-    } else if (retries > 0) {
-      console.warn(`TONConnectUI not defined, retrying (${retries} attempts left)...`);
-      setTimeout(() => initializeTONConnect(retries - 1, delay), delay);
     } else {
-      console.error('TONConnectUI failed to load after retries. Ensure network and script availability.');
-      const walletStatus = document.getElementById('wallet-status');
-      walletStatus.textContent = 'Wallet connection unavailable';
+      console.error('TON_CONNECT_UI.TonConnectUI is not available despite load confirmation');
     }
   }
 
-  // Game Variables
+  // Game Variables (unchanged)
   let lives = 5;
   let coins = 0;
   let timer = 30;
@@ -54,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const totalPairs = 8;
   let isRetry = false;
 
-  // DOM Elements
+  // DOM Elements (unchanged)
   const livesDisplay = document.getElementById('lives');
   const coinsDisplay = document.getElementById('coins');
   const timerDisplay = document.getElementById('timer');
@@ -73,13 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const countdownTimer = document.getElementById('countdown-timer');
   const walletStatus = document.getElementById('wallet-status');
 
-  // Initialize Telegram Web App
+  // Initialize Telegram Web App (unchanged)
   const tg = window.Telegram.WebApp;
   tg.ready();
   tg.expand(); // Make the app full-screen
   tg.enableClosingConfirmation(); // Ask user before closing
 
-  // Enable Back Button
+  // Enable Back Button (unchanged)
   tg.BackButton.show();
   tg.BackButton.onClick(() => {
     if (gameContainer.style.display === 'block') {
@@ -91,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Initialize Loading Animation
+  // Initialize Loading Animation (unchanged)
   function startLoadingAnimation() {
     let loadValue = 0;
     const loadingInterval = setInterval(() => {
@@ -108,19 +114,17 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingScreen.style.display = "none";
         startScreen.style.display = "flex";
         gameContainer.classList.remove('hidden'); // Ensure game container is visible
-        initializeTONConnect(); // Initialize TON Connect after loading
       }
     }, 150);
   }
 
   startLoadingAnimation();
 
-  // Start Button Click Event
+  // Start Button Click Event (unchanged)
   startButton.addEventListener("click", () => {
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
     initGame();
-    // Track game start event (safe call)
     if (window.telegramAnalytics && typeof window.telegramAnalytics.track === 'function') {
       window.telegramAnalytics.track('game_start');
       console.log('Tracked game_start event');
@@ -129,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Card Values (images in public folder)
+  // Card Values (unchanged)
   const cardImages = [
     'public/card1.png',
     'public/card2.png',
@@ -142,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   const cardValues = [...cardImages, ...cardImages]; // Duplicate for pairs
 
-  // Shuffle Function
+  // Shuffle Function (unchanged)
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -151,14 +155,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return array;
   }
 
-  // Initialize Game
+  // Initialize Game (unchanged)
   function initGame() {
     cardGrid.innerHTML = '';
     matchedPairs = 0;
     flippedCards = [];
     shuffle(cardValues);
 
-    // Generate Cards
     cardValues.forEach((imagePath) => {
       const card = document.createElement('div');
       card.classList.add('card');
@@ -170,11 +173,10 @@ document.addEventListener('DOMContentLoaded', () => {
       cardGrid.appendChild(card);
     });
 
-    // Start Timer
     startTimer();
   }
 
-  // Start Timer
+  // Start Timer (unchanged)
   function startTimer() {
     timer = 30;
     timerDisplay.textContent = timer;
@@ -191,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-  // Pause Timer
+  // Pause Timer (unchanged)
   function pauseTimer() {
     if (countdownInterval) {
       clearInterval(countdownInterval);
@@ -199,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Resume Timer
+  // Resume Timer (unchanged)
   function resumeTimer() {
     if (!countdownInterval) {
       countdownInterval = setInterval(() => {
@@ -214,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Handle Card Flip
+  // Handle Card Flip (unchanged)
   function handleCardFlip(event) {
     if (!isGameRunning) return;
     const card = event.currentTarget;
@@ -229,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Check Match
+  // Check Match (unchanged)
   function checkMatch() {
     const [card1, card2] = flippedCards;
     const value1 = card1.querySelector('.back').style.backgroundImage;
@@ -257,20 +259,20 @@ document.addEventListener('DOMContentLoaded', () => {
     flippedCards = [];
   }
 
-  // Show Win Popup
+  // Show Win Popup (unchanged)
   function showWinPopup() {
     pauseTimer();
     winPopup.style.display = "flex";
   }
 
-  // Show Lose Popup
+  // Show Lose Popup (unchanged)
   function showLosePopup(allowContinue = true) {
     pauseTimer();
     losePopup.style.display = "flex";
     continueButton.style.display = allowContinue ? "inline-block" : "none";
   }
 
-  // Show No Lives Left Popup
+  // Show No Lives Left Popup (unchanged)
   function showNoLivesPopup() {
     pauseTimer();
     noLivesPopup.style.display = "flex";
@@ -293,7 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 
-  // Format time in HH:MM:SS format
+  // Format time in HH:MM:SS format (unchanged)
   function formatTime(seconds) {
     const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
     const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
@@ -301,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return `${h}:${m}:${s}`;
   }
 
-  // End Game
+  // End Game (unchanged)
   function endGame(win) {
     isGameRunning = false;
     pauseTimer();
@@ -312,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Close Popup Button Click Event
+  // Close Popup Button Click Event (unchanged)
   closePopupButton.addEventListener("click", () => {
     winPopup.style.display = "none";
     lives--;
@@ -327,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Continue Button Click Event
+  // Continue Button Click Event (unchanged)
   continueButton.addEventListener("click", () => {
     losePopup.style.display = "none";
     isRetry = true;
@@ -346,7 +348,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Next Button Click Event
+  // Next Button Click Event (unchanged)
   nextButton.addEventListener("click", () => {
     losePopup.style.display = "none";
     lives--;
@@ -359,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // On Load, Restore Coins
+  // On Load, Restore Coins (unchanged)
   window.addEventListener('load', () => {
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;

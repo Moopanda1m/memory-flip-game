@@ -5,23 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory Card Game</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Preload TON Connect UI Script -->
+  <!-- Use @latest due to 1.4.1 not found -->
   <link rel="preload" href="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" as="script">
-  <!-- TON Connect UI Library with Fallback -->
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer onload="checkTONConnectLoaded()" onerror="loadTONConnectFallback()"></script>
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer onload="onTONConnectLoad()" onerror="loadTONConnectFallback()"></script>
   <script>
     let tonConnectLoaded = false;
-    function checkTONConnectLoaded() {
+    function onTONConnectLoad() {
       tonConnectLoaded = true;
-      console.log('TON Connect UI loaded successfully');
+      console.log('TON Connect UI script loaded successfully (latest version)');
+      initializeTONConnectCheck(); // Start checking for TON_CONNECT_UI
     }
     function loadTONConnectFallback() {
       const fallbackScript = document.createElement('script');
       fallbackScript.src = 'https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js';
       fallbackScript.defer = true;
-      fallbackScript.onload = checkTONConnectLoaded;
+      fallbackScript.onload = onTONConnectLoad;
       document.head.appendChild(fallbackScript);
-      console.warn('Falling back to jsDelivr CDN for TON Connect UI');
+      console.warn('Falling back to jsDelivr CDN for TON Connect UI (latest version)');
+    }
+    function initializeTONConnectCheck(retries = 20, interval = 500) {
+      if (typeof window.TON_CONNECT_UI !== 'undefined' && tonConnectLoaded && typeof window.TON_CONNECT_UI.TonConnectUI !== 'undefined') {
+        console.log('TON_CONNECT_UI.TonConnectUI is now available, initializing...');
+        initializeTONConnect();
+      } else if (retries > 0) {
+        console.log(`Waiting for TON_CONNECT_UI.TonConnectUI, retries left: ${retries}`);
+        setTimeout(() => initializeTONConnectCheck(retries - 1, interval), interval);
+      } else {
+        console.error('TON_CONNECT_UI.TonConnectUI failed to become available after retries. Check network, script version, or manifest.');
+      }
     }
   </script>
   <!-- Telegram Mini Apps Analytics SDK -->
@@ -69,7 +80,7 @@
   <!-- Start Screen -->
   <div id="start-screen">
     <button id="start-button">START</button>
-    <div id="ton-connect-root"></div> <!-- ✅ THIS is the added TON Connect button placeholder -->
+    <div id="ton-connect-root"></div> <!-- Dedicated container for TON Connect button -->
     <p id="wallet-status">Wallet not connected</p>
   </div>
 
@@ -133,6 +144,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script> <!-- Moved to end of body -->
+  <script src="script.js"></script>
 </body>
 </html>
