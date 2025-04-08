@@ -85,8 +85,13 @@ body {
 }
 
 /* Hide game container initially */
-#game-container {
+.game-container {
   display: none;
+}
+
+/* Hidden Class for Visibility Control */
+.hidden {
+  display: none !important;
 }
 
 /* Game Container */
