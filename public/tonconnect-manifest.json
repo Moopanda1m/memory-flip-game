@@ -1,0 +1,8 @@
+{
+  "url": "https://memoryflip-game-app.vercel.app",
+  "name": "Memory Card Game",
+  "iconUrl": "https://memoryflip-game-app.vercel.app/icon.png",
+  "termsOfUseUrl": "https://memoryflip-game-app.vercel.app/terms.html",
+  "privacyPolicyUrl": "https://memoryflip-game-app.vercel.app/privacy.html",
+  "manifestVersion": "1"
+}
