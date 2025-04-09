@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory Card Game</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Use @latest due to 1.4.1 not found -->
   <link rel="preload" href="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" as="script">
   <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer onload="onTONConnectLoad()" onerror="loadTONConnectFallback()"></script>
   <script>
@@ -36,12 +35,7 @@
     }
   </script>
   <!-- Telegram Mini Apps Analytics SDK -->
-  <script 
-    async 
-    src="https://tganalytics.xyz/index.js" 
-    onload="initAnalytics()" 
-    type="text/javascript"
-  ></script>
+  <script async src="https://tganalytics.xyz/index.js" onload="initAnalytics()" type="text/javascript"></script>
   <script>
     function initAnalytics() {
       if (window.telegramAnalytics && typeof window.telegramAnalytics.init === 'function') {
@@ -80,7 +74,7 @@
   <!-- Start Screen -->
   <div id="start-screen">
     <button id="start-button">START</button>
-    <div id="ton-connect-root"></div> <!-- Dedicated container for TON Connect button -->
+    <div id="ton-connect-root"></div>
     <p id="wallet-status">Wallet not connected</p>
   </div>
 
