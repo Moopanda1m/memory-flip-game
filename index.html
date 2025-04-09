@@ -5,35 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memory Card Game</title>
   <link rel="stylesheet" href="styles.css">
-  <link rel="preload" href="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" as="script">
-  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js" defer onload="onTONConnectLoad()" onerror="loadTONConnectFallback()"></script>
+
+  <!-- TON Connect UI (Stable Version) -->
+  <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
   <script>
-    let tonConnectLoaded = false;
-    function onTONConnectLoad() {
-      tonConnectLoaded = true;
-      console.log('TON Connect UI script loaded successfully (latest version)');
-      initializeTONConnectCheck(); // Start checking for TON_CONNECT_UI
-    }
-    function loadTONConnectFallback() {
-      const fallbackScript = document.createElement('script');
-      fallbackScript.src = 'https://cdn.jsdelivr.net/npm/@tonconnect/ui@latest/dist/tonconnect-ui.min.js';
-      fallbackScript.defer = true;
-      fallbackScript.onload = onTONConnectLoad;
-      document.head.appendChild(fallbackScript);
-      console.warn('Falling back to jsDelivr CDN for TON Connect UI (latest version)');
-    }
-    function initializeTONConnectCheck(retries = 20, interval = 500) {
-      if (typeof window.TON_CONNECT_UI !== 'undefined' && tonConnectLoaded && typeof window.TON_CONNECT_UI.TonConnectUI !== 'undefined') {
-        console.log('TON_CONNECT_UI.TonConnectUI is now available, initializing...');
-        initializeTONConnect();
-      } else if (retries > 0) {
-        console.log(`Waiting for TON_CONNECT_UI.TonConnectUI, retries left: ${retries}`);
-        setTimeout(() => initializeTONConnectCheck(retries - 1, interval), interval);
-      } else {
-        console.error('TON_CONNECT_UI.TonConnectUI failed to become available after retries. Check network, script version, or manifest.');
-      }
-    }
+    window.addEventListener("load", () => {
+      const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://ton-connect.github.io/demo-dapp-with-react/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect-root',
+      });
+
+      // Display connection status
+      tonConnectUI.onStatusChange((wallet) => {
+        const status = document.getElementById('wallet-status');
+        if (wallet) {
+          status.textContent = `Connected: ${wallet.account.address.slice(0, 6)}...`;
+        } else {
+          status.textContent = 'Wallet not connected';
+        }
+      });
+    });
   </script>
+
   <!-- Telegram Mini Apps Analytics SDK -->
   <script async src="https://tganalytics.xyz/index.js" onload="initAnalytics()" type="text/javascript"></script>
   <script>
@@ -47,16 +40,14 @@
         if (typeof window.telegramAnalytics.track === 'function') {
           window.telegramAnalytics.track('app_launch');
           console.log('Tracked app_launch event');
-        } else {
-          console.error('telegramAnalytics.track is not available');
         }
-      } else {
-        console.error('telegramAnalytics is not available');
       }
     }
   </script>
+
   <!-- Monetag SDK Integration -->
   <script src='//whephiwums.com/sdk.js' data-zone='9069289' data-sdk='show_9069289'></script>
+
   <!-- Telegram Web App Script -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -138,6 +129,7 @@
     </div>
   </div>
 
+  <!-- Game Script -->
   <script src="script.js"></script>
 </body>
 </html>

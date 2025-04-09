@@ -1,56 +1,55 @@
-// Ensure DOM is fully loaded before executing
-document.addEventListener('DOMContentLoaded', () => {
-  // Define and expose initializeTONConnect globally
-  function initializeTONConnect() {
-    const tonConnectRoot = document.getElementById('ton-connect-root');
-    if (!tonConnectRoot) {
-      console.error('ton-connect-root element not found in DOM');
-      return;
-    }
-
-    if (typeof window.TON_CONNECT_UI !== 'undefined' && typeof window.TON_CONNECT_UI.TonConnectUI !== 'undefined' && window.tonConnectLoaded) {
-      try {
-        const tonConnectUI = new window.TON_CONNECT_UI.TonConnectUI({
-          manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
-          buttonRootId: 'ton-connect-root',
-          twaReturnUrl: 'https://t.me/flipgame30bot'
-        });
-        // Wait for connection restoration before proceeding
-        tonConnectUI.connectionRestored.then(restored => {
-          if (restored) {
-            console.log('Connection restored successfully. Wallet:', tonConnectUI.wallet);
-          } else {
-            console.log('Connection restoration failed. Check network or bridge.');
-          }
-          // Set up status change listener
-          tonConnectUI.onStatusChange(wallet => {
-            console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
-            const walletStatus = document.getElementById('wallet-status');
-            if (wallet) {
-              const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
-              walletStatus.textContent = `Connected: ${shortAddress}`;
-            } else {
-              walletStatus.textContent = 'Wallet not connected';
-            }
-            tonConnectRoot.classList.remove('hidden'); // Ensure button is visible after status update
-          });
-          console.log('TON Connect UI initialized successfully');
-        }).catch(error => {
-          console.error('Error during connection restoration:', error);
-        });
-      } catch (error) {
-        console.error('TON Connect UI initialization failed:', error);
-        const walletStatus = document.getElementById('wallet-status');
-        walletStatus.textContent = 'Wallet connection unavailable';
-      }
-    } else {
-      console.error('TON_CONNECT_UI.TonConnectUI is not available despite load confirmation');
-    }
+// Define and expose initializeTONConnect globally
+function initializeTONConnect() {
+  const tonConnectRoot = document.getElementById('ton-connect-root');
+  if (!tonConnectRoot) {
+    console.error('ton-connect-root element not found in DOM');
+    return;
   }
 
-  // Expose the function to the global scope
-  window.initializeTONConnect = initializeTONConnect;
+  if (typeof window.TON_CONNECT_UI !== 'undefined' && typeof window.TON_CONNECT_UI.TonConnectUI !== 'undefined' && window.tonConnectLoaded) {
+    try {
+      const tonConnectUI = new window.TON_CONNECT_UI.TonConnectUI({
+        manifestUrl: 'https://memoryflip-game-app.vercel.app/tonconnect-manifest.json',
+        buttonRootId: 'ton-connect-root',
+        twaReturnUrl: 'https://t.me/flipgame30bot'
+      });
+      // Wait for connection restoration before proceeding
+      tonConnectUI.connectionRestored.then(restored => {
+        if (restored) {
+          console.log('Connection restored successfully. Wallet:', tonConnectUI.wallet);
+        } else {
+          console.log('Connection restoration failed. Check network or bridge.');
+        }
+        // Set up status change listener
+        tonConnectUI.onStatusChange(wallet => {
+          console.log('Wallet status changed:', wallet ? 'Connected' : 'Disconnected');
+          const walletStatus = document.getElementById('wallet-status');
+          if (wallet) {
+            const shortAddress = `${wallet.account.address.slice(0, 6)}...${wallet.account.address.slice(-4)}`;
+            walletStatus.textContent = `Connected: ${shortAddress}`;
+          } else {
+            walletStatus.textContent = 'Wallet not connected';
+          }
+          tonConnectRoot.classList.remove('hidden'); // Ensure button is visible after status update
+        });
+        console.log('TON Connect UI initialized successfully');
+      }).catch(error => {
+        console.error('Error during connection restoration:', error);
+      });
+    } catch (error) {
+      console.error('TON Connect UI initialization failed:', error);
+      const walletStatus = document.getElementById('wallet-status');
+      walletStatus.textContent = 'Wallet connection unavailable';
+    }
+  } else {
+    console.error('TON_CONNECT_UI.TonConnectUI is not available despite load confirmation');
+  }
+}
 
+window.initializeTONConnect = initializeTONConnect;
+
+// Ensure DOM is fully loaded before executing
+document.addEventListener('DOMContentLoaded', () => {
   // Game Variables
   let lives = 5;
   let coins = 0;
