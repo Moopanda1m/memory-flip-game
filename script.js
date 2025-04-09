@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Loading Animation
   function startLoadingAnimation() {
     let loadValue = 0;
-    const loadingInterval = setInterval(() => {
+    const loadingInterval = setTimeout(() => {
       if (!loadingScreen || !loadingProgress) {
         clearInterval(loadingInterval);
         console.error('Loading elements not found');
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
       window.telegramAnalytics.track('game_start');
       console.log('Tracked game_start event');
     } else {
-      console.warn('telegramAnalytics.track is not available for game_start');
+      console.warn('telegramAnalytics.track is not available for game_start - skipping');
     }
   });
 
