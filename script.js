@@ -330,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lives--;
     livesDisplay.textContent = lives;
     localStorage.setItem('lives', lives); // Save lives to localStorage
+    localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Save update timestamp
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
     isRetry = false;
@@ -352,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
       lives--;
       livesDisplay.textContent = lives;
       localStorage.setItem('lives', lives); // Save lives to localStorage
+      localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Save update timestamp
       if (lives > 0) {
         initGame();
       } else {
@@ -366,6 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
     lives--;
     livesDisplay.textContent = lives;
     localStorage.setItem('lives', lives); // Save lives to localStorage
+    localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Save update timestamp
     isRetry = false;
     if (lives > 0) {
       initGame();
@@ -374,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // On Load, Restore Coins and Lives
+  // On Load, Restore Coins and Lives with Regeneration
   window.addEventListener('load', () => {
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
@@ -382,6 +385,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const cooldownEndTime = localStorage.getItem('cooldownEndTime');
     if (cooldownEndTime && Date.now() < Date.parse(cooldownEndTime)) {
       showNoLivesPopup();
+    } else {
+      const lastUpdate = localStorage.getItem('lastLivesUpdate');
+      if (lastUpdate) {
+        const timeElapsed = (Date.now() - Date.parse(lastUpdate)) / 1000; // Seconds elapsed
+        const regenInterval = 36 * 60; // 36 minutes in seconds
+        const livesToAdd = Math.floor(timeElapsed / regenInterval); // Number of lives to add
+        lives = Math.min(5, lives + livesToAdd); // Cap at 5
+        localStorage.setItem('lives', lives); // Save updated lives
+        localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Update timestamp
+        livesDisplay.textContent = lives; // Update display
+      }
     }
   });
 });
