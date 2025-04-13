@@ -267,7 +267,7 @@ body {
 }
 
 .popup-content h2, .popup-content p {
-  color: var(--tg-theme-text-color, #ffffff); /* Updated to ensure visibility in dark mode */
+  color: var(--tg-theme-text-color, #000000); /* Updated to dark color fallback */
 }
 
 /* Button container for side-by-side layout in Lose Popup */
