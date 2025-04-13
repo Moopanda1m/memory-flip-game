@@ -32,7 +32,7 @@ body {
 /* Loading Bar */
 .loading-container {
   text-align: center;
-  color: var(--tg-theme-text-color, white);
+  color: var(--tg-theme-text-color, #333333); /* Changed fallback to #333333 for light mode visibility */
   font-size: 1.5rem;
   font-weight: bold;
 }
