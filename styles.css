@@ -32,7 +32,7 @@ body {
 /* Loading Bar */
 .loading-container {
   text-align: center;
-  color: var(--tg-theme-text-color, white); /* Adjusted for dark/light mode */
+  color: var(--tg-theme-text-color, #333); /* Changed fallback to #333 for light mode visibility */
   font-size: 1.5rem;
   font-weight: bold;
 }
@@ -50,7 +50,7 @@ body {
 .loading-progress {
   width: 0;
   height: 100%;
-  background-color: var(--tg-theme-button-color, #55b3ff); /* Adjusted for theme */
+  background-color: #55b3ff;
   transition: width 0.1s ease-in-out;
 }
 
@@ -62,13 +62,13 @@ body {
 #start-button {
   background: linear-gradient(to right, #ef7748, #f0cf3a);
   border: none;
-  color: var(--tg-theme-button-text-color, white); /* Adjusted for theme */
+  color: white;
   font-size: 24px;
   font-weight: bold;
   padding: 15px 40px;
   border-radius: 10px;
   cursor: pointer;
-  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 1);
   transition: 0.3s;
 }
 
@@ -84,7 +84,7 @@ body {
 #wallet-status {
   margin-top: 5px;
   font-size: 14px;
-  color: var(--tg-theme-text-color, white); /* Adjusted for dark/light mode */
+  color: white;
   font-weight: bold;
 }
 
@@ -120,11 +120,6 @@ body {
   font-weight: bold;
   padding: 10px;
   border-radius: 10px;
-  color: var(--tg-theme-text-color, #000000); /* Adjusted for theme */
-}
-
-.lives span, .coins span, .timer span {
-  color: var(--tg-theme-text-color, #000000); /* Ensure text is theme-aware */
 }
 
 /* Icon Containers */
@@ -192,12 +187,12 @@ body {
 
 /* Front and Back Colors */
 .front {
-  background-color: var(--tg-theme-secondary-bg-color, #3498db); /* Adjusted for theme */
+  background-color: #3498db;
 }
 
 .back {
-  background-color: var(--tg-theme-secondary-bg-color, #f96464); /* Adjusted for theme */
-  color: var(--tg-theme-text-color, white); /* Ensure text contrast */
+  background-color: #f96464;
+  color: white;
   transform: rotateY(180deg);
   background-size: 70%;
   background-position: center;
@@ -209,8 +204,8 @@ body {
 .hint-container {
   margin-top: 80px;
   padding: 10px;
-  background-color: var(--tg-theme-bg-color, rgba(255, 255, 255, 0.9)); /* Adjusted for theme */
-  border: 2px solid var(--tg-theme-button-color, #3498db); /* Adjusted for theme */
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid #3498db;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: left;
@@ -220,7 +215,7 @@ body {
 .hint-title {
   font-size: 1.2rem;
   font-weight: bold;
-  color: var(--tg-theme-text-color, #333); /* Adjusted for theme */
+  color: #333;
   margin: 0 0 10px 0;
   text-align: center;
 }
@@ -235,7 +230,7 @@ body {
   display: flex;
   align-items: center;
   font-size: 1rem;
-  color: var(--tg-theme-text-color, #333); /* Adjusted for theme */
+  color: #333;
   margin: 8px 0;
   line-height: 1.4;
 }
@@ -243,7 +238,6 @@ body {
 .hint-icon {
   margin-right: 10px;
   font-size: 1.2rem;
-  color: var(--tg-theme-hint-color, #888); /* Adjusted for theme */
 }
 
 /* Pop-Up Styles */
@@ -263,18 +257,17 @@ body {
 }
 
 .popup-content {
-  background-color: var(--tg-theme-bg-color, white); /* Adjusted for theme */
+  background-color: white;
   padding: 30px;
   border-radius: 10px;
   text-align: center;
   position: relative;
   z-index: 1200;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  color: var(--tg-theme-text-color, #000000); /* Adjusted for theme */
 }
 
 .popup-content h2, .popup-content p {
-  color: var(--tg-theme-text-color, #000000); /* Ensure contrast */
+  color: var(--tg-theme-text-color, #000000); /* Added to ensure visibility in both modes */
 }
 
 /* Button container for side-by-side layout in Lose Popup */
@@ -286,8 +279,8 @@ body {
 }
 
 #close-popup, #continue-button, #next-button {
-  background: var(--tg-theme-button-color, #db3434); /* Adjusted for theme */
-  color: var(--tg-theme-button-text-color, white); /* Adjusted for theme */
+  background: #db3434;
+  color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
@@ -296,7 +289,7 @@ body {
 
 /* Update background for continue-button */
 #continue-button {
-  background: var(--tg-theme-button-color, #0eb116) url("public/film.png") no-repeat 10px center;
+  background: #0eb116 url("public/film.png") no-repeat 10px center;
   background-size: 24px 24px;
   padding-left: 50px;
 }
@@ -310,6 +303,6 @@ body {
 
 #countdown-timer {
   font-size: 2rem;
-  color: var(--tg-theme-destructive-text-color, red); /* Adjusted for theme */
+  color: red;
   margin-top: 20px;
 }
