@@ -127,12 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
     initGame();
-    if (window.telegramAnalytics && typeof window.telegramAnalytics.track === 'function') {
-      window.telegramAnalytics.track('game_start');
-      console.log('Tracked game_start event');
-    } else {
-      console.warn('telegramAnalytics.track is not available for game_start');
-    }
+    // Removed game_start tracking to avoid error
   });
 
   // Card Values
