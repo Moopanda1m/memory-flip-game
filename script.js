@@ -51,7 +51,7 @@ window.initializeTONConnect = initializeTONConnect;
 // Ensure DOM is fully loaded before executing
 document.addEventListener('DOMContentLoaded', () => {
   // Game Variables
-  let lives = 5;
+  let lives = parseInt(localStorage.getItem('lives'), 10) || 5; // Initialize from localStorage with default 5
   let coins = 0;
   let timer = 30;
   let flippedCards = [];
@@ -273,18 +273,31 @@ document.addEventListener('DOMContentLoaded', () => {
   function showNoLivesPopup() {
     pauseTimer();
     noLivesPopup.style.display = "flex";
-    let remainingTime = 10800;
+    const cooldownEndTime = localStorage.getItem('cooldownEndTime');
+    let remainingTime = cooldownEndTime ? Math.max(0, Math.floor((Date.parse(cooldownEndTime) - Date.now()) / 1000)) : 10800;
+
+    if (remainingTime <= 0) {
+      lives = 5;
+      localStorage.setItem('lives', lives);
+      localStorage.removeItem('cooldownEndTime');
+    } else {
+      localStorage.setItem('cooldownEndTime', new Date(Date.now() + remainingTime * 1000).toISOString());
+    }
+
     countdownTimer.textContent = formatTime(remainingTime);
 
     waitingInterval = setInterval(() => {
       remainingTime--;
       countdownTimer.textContent = formatTime(remainingTime);
+      localStorage.setItem('cooldownEndTime', new Date(Date.now() + remainingTime * 1000).toISOString());
 
       if (remainingTime <= 0) {
         clearInterval(waitingInterval);
         noLivesPopup.style.display = "none";
         lives = 5;
         livesDisplay.textContent = lives;
+        localStorage.setItem('lives', lives);
+        localStorage.removeItem('cooldownEndTime');
         coins = parseInt(localStorage.getItem('coins'), 10) || 0;
         coinsDisplay.textContent = coins;
         initGame();
@@ -316,6 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     winPopup.style.display = "none";
     lives--;
     livesDisplay.textContent = lives;
+    localStorage.setItem('lives', lives); // Save lives to localStorage
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
     isRetry = false;
@@ -337,6 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
       isRetry = false;
       lives--;
       livesDisplay.textContent = lives;
+      localStorage.setItem('lives', lives); // Save lives to localStorage
       if (lives > 0) {
         initGame();
       } else {
@@ -350,6 +365,7 @@ document.addEventListener('DOMContentLoaded', () => {
     losePopup.style.display = "none";
     lives--;
     livesDisplay.textContent = lives;
+    localStorage.setItem('lives', lives); // Save lives to localStorage
     isRetry = false;
     if (lives > 0) {
       initGame();
@@ -358,9 +374,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // On Load, Restore Coins
+  // On Load, Restore Coins and Lives
   window.addEventListener('load', () => {
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
+    livesDisplay.textContent = lives; // Display initial lives from localStorage
+    const cooldownEndTime = localStorage.getItem('cooldownEndTime');
+    if (cooldownEndTime && Date.now() < Date.parse(cooldownEndTime)) {
+      showNoLivesPopup();
+    }
   });
 });
