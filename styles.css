@@ -32,7 +32,7 @@ body {
 /* Loading Bar */
 .loading-container {
   text-align: center;
-  color: var(--tg-theme-text-color, #333); /* Changed fallback to #333 for light mode visibility */
+  color: var(--tg-theme-text-color, white);
   font-size: 1.5rem;
   font-weight: bold;
 }
@@ -267,7 +267,7 @@ body {
 }
 
 .popup-content h2, .popup-content p {
-  color: var(--tg-theme-text-color, #000000); /* Added to ensure visibility in both modes */
+  color: var(--tg-theme-text-color, #ffffff); /* Updated to ensure visibility in dark mode */
 }
 
 /* Button container for side-by-side layout in Lose Popup */
