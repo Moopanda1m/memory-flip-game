@@ -85,9 +85,12 @@
         <img src="public/timer.png" alt="Time">
         <span id="timer">30</span>s
       </div>
-      <!-- Reward Image -->
-      <div class="reward-image">
-        <img src="public/coin.png" alt="Daily Reward" id="reward-icon">
+      <!-- Adjusted daily-reward with nested structure for text -->
+      <div class="daily-reward" style="position: absolute; top: 50px; left: 15px;">
+        <div style="position: relative; display: inline-block;">
+          <img src="public/gift.png" alt="Daily Reward" id="daily-reward-icon" style="display: block;">
+          <span style="display: block; position: absolute; top: 32px; left: 50%; transform: translateX(-50%); color: white; font-size: 12px; white-space: nowrap;">Daily Bonus</span>
+        </div>
       </div>
     </div>
 
@@ -133,25 +136,54 @@
     </div>
   </div>
 
-  <!-- Daily Reward Popup -->
-  <div id="daily-reward-popup" class="popup">
-    <div class="popup-content">
-      <span id="close-reward" class="close-btn">×</span>
-      <h2>DAILY BONUS</h2>
-      <div class="reward-grid">
-        <div class="reward-day" data-day="1"><img src="public/coin.png" alt="Coins">+250<span class="day-label">Day 1</span></div>
-        <div class="reward-day" data-day="2"><img src="public/coin.png" alt="Coins">+500<span class="day-label">Day 2</span></div>
-        <div class="reward-day" data-day="3"><img src="public/coin.png" alt="Coins">+600<span class="day-label">Day 3</span></div>
-        <div class="reward-day" data-day="4"><img src="public/coin.png" alt="Coins">+700<span class="day-label">Day 4</span></div>
-        <div class="reward-day" data-day="5"><img src="public/coin.png" alt="Coins">+800<span class="day-label">Day 5</span></div>
-        <div class="reward-day" data-day="6"><img src="public/coin.png" alt="Coins">+900<span class="day-label">Day 6</span></div>
-        <div class="reward-day" data-day="7"><img src="public/coin.png" alt="Coins">+1000<span class="day-label">Day 7</span></div>
+  <div id="daily-bonus-popup" class="popup">
+    <div class="bonus-container">
+      <button class="close-btn">×</button>
+      <h2 class="bonus-title">Daily Bonus</h2>
+      <div class="bonus-days">
+        <div class="day-card" id="day1">
+          <img src="public/coin.png" alt="Coins">
+          <p>Day 1</p>
+          <span>+250</span>
+        </div>
+        <div class="day-card" id="day2">
+          <img src="public/coin.png" alt="Coins">
+          <p>Day 2</p>
+          <span>+500</span>
+        </div>
+        <div class="day-card" id="day3">
+          <img src="public/coin.png" alt="Coins">
+          <p>Day 3</p>
+          <span>+600</span>
+        </div>
+        <div class="day-card" id="day4">
+          <img src="public/coin.png" alt="Coins">
+          <p>Day 4</p>
+          <span>+700</span>
+        </div>
+        <div class="day-card" id="day5">
+          <img src="public/coin.png" alt="Coins">
+          <p>Day 5</p>
+          <span>+800</span>
+        </div>
+        <div class="day-card" id="day6">
+          <img src="public/coin.png" alt="Coins">
+          <p>Day 6</p>
+          <span>+900</span>
+        </div>
+        <div class="day-card" id="day7">
+          <img src="public/coin.png" alt="Coins">
+          <p>Day 7</p>
+          <span>+1000</span>
+        </div>
       </div>
-      <p>Come back every day for new reward</p>
-      <button id="claim-reward">Claim Reward</button>
-      <span id="reward-timer" style="display: none;">Next Reward in: <span id="timer-display"></span></span>
+      <p class="reminder" id="bonus-message">Come back every day for new rewards!</p>
+      <button id="claim-bonus-btn">Claim Reward</button>
     </div>
   </div>
+
+  <!-- Audio Element for Music -->
+  <audio id="background-music" src="music/game_music.mp3" loop></audio>
 
   <!-- Game Script -->
   <script src="script.js"></script>
