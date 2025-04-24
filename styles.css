@@ -103,6 +103,8 @@ body {
   width: 90%;
   max-width: 600px;
   text-align: center;
+  position: relative;
+  min-height: 100vh; /* Ensure container takes full height */
 }
 
 /* Header (Updated Spacing + Better Icon/Text Size) */
@@ -118,20 +120,22 @@ body {
   align-items: center;
   font-size: 1.4rem;
   font-weight: bold;
-  padding: 10px;
+  padding: 15px 20px; /* Increased padding for better spacing */
   border-radius: 10px;
+  z-index: 10; /* Ensure header stays above other elements */
 }
 
 /* Icon Containers */
 .lives, .coins, .timer {
   display: flex;
   align-items: center;
+  padding: 5px 10px; /* Added padding for better spacing around icons */
 }
 
 /* Icons (Resized & Spaced) */
 .lives img, .coins img, .timer img {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px; /* Increased from 28px to 32px */
   margin-right: 8px;
 }
 
@@ -143,11 +147,44 @@ body {
   padding-right: 15px;
 }
 
+/* Daily Reward (Aligned below Lives Icon) */
+.daily-reward {
+  position: absolute;
+  top: calc(10px + 32px + 5px); /* 10px (header top) + 32px (lives icon height) + 5px (padding) */
+  left: 15px; /* Matches the left padding of the lives icon */
+  display: flex;
+  align-items: center;
+}
+
+.daily-reward img {
+  width: 32px;
+  height: 32px;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
+  transition: transform 0.3s;
+}
+
+.daily-reward img:hover {
+  transform: scale(1.2);
+}
+
+.daily-reward span {
+  display: block;
+  position: absolute;
+  top: 32px; /* Position text below the icon */
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--tg-theme-text-color, black); /* Black in light mode, white in dark mode with fallback */
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 /* Card Grid */
 .card-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
+  margin-top: 140px; /* Increased margin to avoid overlap with header and daily-reward */
+  width: 100%;
 }
 
 .card {
@@ -203,13 +240,16 @@ body {
 /* Hint Container Styles */
 .hint-container {
   margin-top: 80px;
-  padding: 10px;
+  padding: 15px; /* Increased padding for better spacing */
   background-color: rgba(255, 255, 255, 0.9);
   border: 2px solid #3498db;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: left;
   max-width: 90%;
+  position: absolute;
+  bottom: 30px; /* Increased bottom spacing for better padding */
+  width: 100%;
 }
 
 .hint-title {
@@ -227,7 +267,7 @@ body {
 }
 
 .hint-list li {
-  display: flex;
+  display: full-flex;
   align-items: center;
   font-size: 1rem;
   color: #333;
@@ -305,4 +345,293 @@ body {
   font-size: 2rem;
   color: red;
   margin-top: 20px;
+}
+
+/* Notification badge for gift icon */
+.daily-reward {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  background-color: red;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* Daily Bonus Popup */
+#daily-bonus-popup {
+  z-index: 1500;
+}
+
+.bonus-container {
+  background: #03254c;
+  padding: 20px;
+  border-radius: 15px;
+  width: 85%;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  text-align: center;
+  color: white;
+  position: relative;
+  background: linear-gradient(135deg, #03254c, #005ea3);
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 5px 10px;
+  transition: color 0.3s;
+}
+
+.close-btn:hover {
+  color: #ffcc00;
+}
+
+.bonus-title {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: gold;
+  text-transform: uppercase;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+}
+
+.bonus-days {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.day-card {
+  background: #003366;
+  border-radius: 10px;
+  padding: 15px 10px;
+  border: 2px solid #005ea3;
+  transition: 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.day-card.active {
+  border-color: gold;
+  background: #004c99;
+}
+
+.day-card.claimed {
+  border-color: #00cc66;
+  background: #004080;
+}
+
+.day-card.claimed::after {
+  content: "✓";
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  color: #00ff88;
+  font-size: 16px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+.day-card.claimed::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Transparent black overlay */
+  z-index: 1;
+}
+
+.day-card img {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.day-card p {
+  margin: 10px 0 5px;
+  font-weight: bold;
+  position: relative;
+  z-index: 2;
+}
+
+.day-card span {
+  font-size: 16px;
+  color: #00ffcc;
+  position: relative;
+  z-index: 2;
+}
+
+.reminder {
+  margin: 20px 0 10px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+#claim-bonus-btn {
+  background-color: gold;
+  color: black;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#claim-bonus-btn:hover {
+  background-color: #ffcc00;
+}
+
+#claim-bonus-btn:disabled {
+  background-color: #666;
+  cursor: not-allowed;
+}
+
+/* Special layout for 7th day */
+#day7 {
+  grid-column: 2 / 4;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .bonus-container {
+    width: 90%;
+    max-width: 350px;
+    padding: 15px;
+  }
+  .close-btn {
+    top: 8px;
+    right: 12px;
+    font-size: 20px;
+  }
+  .bonus-title {
+    font-size: 24px;
+  }
+  .bonus-days {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+  #day7 {
+    grid-column: auto;
+  }
+  .day-card img {
+    width: 30px;
+    height: 30px;
+  }
+  .day-card p {
+    font-size: 14px;
+  }
+  .day-card span {
+    font-size: 14px;
+  }
+  .header {
+    top: 5px; /* Reduce header top margin on small screens */
+    font-size: 1.2rem; /* Slightly smaller font for better fit */
+    padding: 10px 15px; /* Adjusted padding for smaller screens */
+  }
+  .lives, .coins, .timer {
+    padding: 5px 8px; /* Slightly reduced padding */
+  }
+  .lives img, .coins img, .timer img {
+    width: 28px;
+    height: 28px; /* Slightly reduced from 32px for better fit */
+  }
+  .daily-reward {
+    top: calc(5px + 28px + 5px); /* Adjusted for smaller header top and lives icon height */
+    left: 15px;
+  }
+  .daily-reward img {
+    width: 28px;
+    height: 28px; /* Reduced for smaller screens */
+  }
+  .daily-reward span {
+    top: 28px; /* Adjusted for smaller icon */
+    font-size: 10px;
+  }
+  .card-grid {
+    margin-top: 120px; /* Adjusted margin to account for smaller header and daily-reward */
+    gap: 8px; /* Slightly reduce gap between cards */
+  }
+  .hint-container {
+    margin-top: 60px;
+    bottom: 20px; /* Adjusted bottom spacing */
+    padding: 10px;
+    font-size: 0.9rem; /* Slightly smaller text */
+  }
+  .hint-title {
+    font-size: 1rem;
+  }
+  .hint-icon {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .header {
+    top: 0;
+    padding: 5px 10px;
+    font-size: 1rem;
+  }
+  .lives, .coins, .timer {
+    padding: 3px 5px;
+  }
+  .lives img, .coins img, .timer img {
+    width: 24px;
+    height: 24px; /* Further reduced for very small screens */
+    margin-right: 10px;
+  }
+  .daily-reward {
+    top: calc(0px + 24px + 5px); /* Adjusted for smallest header top and lives icon height */
+    left: 10px;
+  }
+  .daily-reward img {
+    width: 24px;
+    height: 24px; /* Further reduced */
+  }
+  .daily-reward span {
+    top: 24px;
+    font-size: 10px;
+  }
+  .card-grid {
+    margin-top: 100px;
+    gap: 6px;
+  }
+  .card {
+    border-radius: 6px;
+  }
+  .hint-container {
+    margin-top: 50px;
+    bottom: 15px;
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+  .hint-title {
+    font-size: 0.9rem;
+  }
+  .hint-icon {
+    font-size: 0.9rem;
+  }
 }

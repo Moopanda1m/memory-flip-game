@@ -51,8 +51,8 @@ window.initializeTONConnect = initializeTONConnect;
 // Ensure DOM is fully loaded before executing
 document.addEventListener('DOMContentLoaded', () => {
   // Game Variables
-  let lives = parseInt(localStorage.getItem('lives'), 10) || 5; // Initialize from localStorage with default 5
-  let coins = 0;
+  let lives = parseInt(localStorage.getItem('lives'), 10) || 5;
+  let coins = parseInt(localStorage.getItem('coins'), 10) || 0;
   let timer = 30;
   let flippedCards = [];
   let matchedPairs = 0;
@@ -80,12 +80,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const noLivesPopup = document.getElementById('no-lives-popup');
   const countdownTimer = document.getElementById('countdown-timer');
   const walletStatus = document.getElementById('wallet-status');
+  const dailyRewardIcon = document.getElementById('daily-reward-icon');
+  const dailyBonusPopup = document.getElementById('daily-bonus-popup');
+  const claimBonusBtn = document.getElementById('claim-bonus-btn');
+  const bonusMessage = document.getElementById('bonus-message');
+  const closeBtn = document.querySelector('.close-btn');
+
+  // Music Control
+  const backgroundMusic = document.getElementById('background-music');
 
   // Initialize Telegram Web App
   const tg = window.Telegram.WebApp;
   tg.ready();
-  tg.expand(); // Make the app full-screen
-  tg.enableClosingConfirmation(); // Ask user before closing
+  tg.expand();
+  tg.enableClosingConfirmation();
 
   // Enable Back Button
   tg.BackButton.show();
@@ -95,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
       startScreen.style.display = 'flex';
       pauseTimer();
     } else {
-      tg.close(); // Close the app if on start screen
+      tg.close();
     }
   });
 
@@ -115,7 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(loadingInterval);
         loadingScreen.style.display = "none";
         startScreen.style.display = "flex";
-        gameContainer.classList.remove('hidden'); // Ensure game container is visible
+        gameContainer.classList.remove('hidden');
+        playMusic(); // Start music when loading completes
       }
     }, 150);
   }
@@ -127,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
     initGame();
-    // Removed game_start tracking to avoid error
   });
 
   // Card Values
@@ -141,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'public/card7.png',
     'public/card8.png'
   ];
-  const cardValues = [...cardImages, ...cardImages]; // Duplicate for pairs
+  const cardValues = [...cardImages, ...cardImages];
 
   // Shuffle Function
   function shuffle(array) {
@@ -200,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Resume Timer
   function resumeTimer() {
-    if (!countdownInterval) {
+    if (!countdownInterval && isGameRunning) {
       countdownInterval = setInterval(() => {
         if (timer > 0) {
           timer--;
@@ -329,8 +337,8 @@ document.addEventListener('DOMContentLoaded', () => {
     winPopup.style.display = "none";
     lives--;
     livesDisplay.textContent = lives;
-    localStorage.setItem('lives', lives); // Save lives to localStorage
-    localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Save update timestamp
+    localStorage.setItem('lives', lives);
+    localStorage.setItem('lastLivesUpdate', new Date().toISOString());
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
     isRetry = false;
@@ -352,8 +360,8 @@ document.addEventListener('DOMContentLoaded', () => {
       isRetry = false;
       lives--;
       livesDisplay.textContent = lives;
-      localStorage.setItem('lives', lives); // Save lives to localStorage
-      localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Save update timestamp
+      localStorage.setItem('lives', lives);
+      localStorage.setItem('lastLivesUpdate', new Date().toISOString());
       if (lives > 0) {
         initGame();
       } else {
@@ -367,8 +375,8 @@ document.addEventListener('DOMContentLoaded', () => {
     losePopup.style.display = "none";
     lives--;
     livesDisplay.textContent = lives;
-    localStorage.setItem('lives', lives); // Save lives to localStorage
-    localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Save update timestamp
+    localStorage.setItem('lives', lives);
+    localStorage.setItem('lastLivesUpdate', new Date().toISOString());
     isRetry = false;
     if (lives > 0) {
       initGame();
@@ -381,21 +389,162 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('load', () => {
     coins = parseInt(localStorage.getItem('coins'), 10) || 0;
     coinsDisplay.textContent = coins;
-    livesDisplay.textContent = lives; // Display initial lives from localStorage
+    lives = parseInt(localStorage.getItem('lives'), 10) || 5;
+    livesDisplay.textContent = lives;
     const cooldownEndTime = localStorage.getItem('cooldownEndTime');
     if (cooldownEndTime && Date.now() < Date.parse(cooldownEndTime)) {
       showNoLivesPopup();
     } else {
       const lastUpdate = localStorage.getItem('lastLivesUpdate');
       if (lastUpdate) {
-        const timeElapsed = (Date.now() - Date.parse(lastUpdate)) / 1000; // Seconds elapsed
-        const regenInterval = 36 * 60; // 36 minutes in seconds
-        const livesToAdd = Math.floor(timeElapsed / regenInterval); // Number of lives to add
-        lives = Math.min(5, lives + livesToAdd); // Cap at 5
-        localStorage.setItem('lives', lives); // Save updated lives
-        localStorage.setItem('lastLivesUpdate', new Date().toISOString()); // Update timestamp
-        livesDisplay.textContent = lives; // Update display
+        const timeElapsed = (Date.now() - Date.parse(lastUpdate)) / 1000;
+        const regenInterval = 36 * 60;
+        const livesToAdd = Math.floor(timeElapsed / regenInterval);
+        lives = Math.min(5, lives + livesToAdd);
+        localStorage.setItem('lives', lives);
+        localStorage.setItem('lastLivesUpdate', new Date().toISOString());
+        livesDisplay.textContent = lives;
       }
     }
+  });
+
+  // Daily Reward System
+  let currentDay = parseInt(localStorage.getItem('dailyRewardDay') || '0');
+  let lastClaimDate = localStorage.getItem('lastDailyReward');
+  let canClaim = false;
+  const rewardAmounts = [250, 500, 600, 700, 800, 900, 1000];
+
+  function checkDailyRewardEligibility() {
+    const now = new Date();
+    if (!lastClaimDate) {
+      canClaim = true;
+      return;
+    }
+    const lastClaim = new Date(lastClaimDate);
+    const timeDiff = now - lastClaim;
+    if (timeDiff >= 86400000) {
+      canClaim = true;
+      if (timeDiff > 86400000 + 60 * 1000) {
+        currentDay = 0;
+        localStorage.setItem('dailyRewardDay', currentDay);
+      }
+    } else {
+      canClaim = false;
+    }
+    updateNotificationBadge();
+  }
+
+  function updateNotificationBadge() {
+    const existingBadge = document.querySelector('.notification-badge');
+    if (existingBadge) existingBadge.remove();
+    if (canClaim) {
+      const badge = document.createElement('div');
+      badge.className = 'notification-badge';
+      badge.innerHTML = '!';
+      dailyRewardIcon.parentNode.appendChild(badge);
+    }
+  }
+
+  function showDailyRewardPopup() {
+    pauseTimer();
+    dailyBonusPopup.style.display = 'flex';
+    updateDailyRewardUI();
+  }
+
+  function updateDailyRewardUI() {
+    for (let i = 1; i <= 7; i++) {
+      const dayCard = document.getElementById(`day${i}`);
+      dayCard.classList.remove('active', 'claimed');
+    }
+    for (let i = 0; i < currentDay; i++) {
+      const dayCard = document.getElementById(`day${i + 1}`);
+      if (dayCard) dayCard.classList.add('claimed');
+    }
+    const activeDay = document.getElementById(`day${currentDay + 1}`);
+    if (activeDay) activeDay.classList.add('active');
+    if (canClaim) {
+      claimBonusBtn.disabled = false;
+      const nextReward = rewardAmounts[currentDay];
+      bonusMessage.textContent = `Claim your Day ${currentDay + 1} reward of ${nextReward} coins!`;
+    } else {
+      claimBonusBtn.disabled = true;
+      bonusMessage.textContent = `Come back every day for new rewards!`;
+    }
+  }
+
+  function claimDailyReward() {
+    if (!canClaim) return;
+    const rewardAmount = rewardAmounts[currentDay];
+    coins += rewardAmount;
+    localStorage.setItem('coins', coins);
+    coinsDisplay.textContent = coins;
+    currentDay = (currentDay + 1) % 7 || 1;
+    localStorage.setItem('dailyRewardDay', currentDay);
+    const now = new Date();
+    localStorage.setItem('lastDailyReward', now.toISOString());
+    const claimedDay = document.getElementById(`day${currentDay}`);
+    if (claimedDay) claimedDay.classList.add('claimed');
+    bonusMessage.textContent = `Reward claimed: +${rewardAmount} coins! Come back tomorrow.`;
+    claimBonusBtn.disabled = true;
+    canClaim = false;
+    const badge = document.querySelector('.notification-badge');
+    if (badge) badge.remove();
+    setTimeout(() => {
+      dailyBonusPopup.style.display = 'none';
+      resumeTimer();
+    }, 2000);
+  }
+
+  if (dailyRewardIcon) {
+    dailyRewardIcon.addEventListener('click', showDailyRewardPopup);
+  }
+  if (claimBonusBtn) {
+    claimBonusBtn.addEventListener('click', claimDailyReward);
+  }
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      dailyBonusPopup.style.display = 'none';
+      resumeTimer();
+    });
+  }
+
+  checkDailyRewardEligibility();
+  if (canClaim && startButton) {
+    setTimeout(() => showDailyRewardPopup(), 500);
+  }
+
+  // Music Functions
+  function playMusic() {
+    if (backgroundMusic) {
+      backgroundMusic.volume = 0.1; // Set to 30% volume to avoid being too loud
+      backgroundMusic.play().catch(error => {
+        console.log('Autoplay blocked by browser, music will play on user interaction:', error);
+      });
+    }
+  }
+
+  function pauseMusic() {
+    if (backgroundMusic) {
+      backgroundMusic.pause();
+    }
+  }
+
+  // Start music when game loads or user interacts
+  startButton.addEventListener('click', () => {
+    playMusic();
+  });
+
+  // Pause music on popup open, resume on close
+  [winPopup, losePopup, noLivesPopup, dailyBonusPopup].forEach(popup => {
+    popup.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON' || e.target.className === 'close-btn') {
+        pauseMusic();
+      }
+    });
+    popup.addEventListener('transitionend', (e) => {
+      if (!popup.style.display || popup.style.display === 'none') {
+        playMusic();
+      }
+    });
   });
 });

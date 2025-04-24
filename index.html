@@ -85,6 +85,10 @@
         <img src="public/timer.png" alt="Time">
         <span id="timer">30</span>s
       </div>
+      <!-- Reward Image -->
+      <div class="reward-image">
+        <img src="public/coin.png" alt="Daily Reward" id="reward-icon">
+      </div>
     </div>
 
     <!-- Card Grid -->
@@ -126,6 +130,26 @@
       <h2>All Lives Used Up! 🕒</h2>
       <p>Wait 3 hours to play again.</p>
       <span id="countdown-timer">03:00:00</span>
+    </div>
+  </div>
+
+  <!-- Daily Reward Popup -->
+  <div id="daily-reward-popup" class="popup">
+    <div class="popup-content">
+      <span id="close-reward" class="close-btn">×</span>
+      <h2>DAILY BONUS</h2>
+      <div class="reward-grid">
+        <div class="reward-day" data-day="1"><img src="public/coin.png" alt="Coins">+250<span class="day-label">Day 1</span></div>
+        <div class="reward-day" data-day="2"><img src="public/coin.png" alt="Coins">+500<span class="day-label">Day 2</span></div>
+        <div class="reward-day" data-day="3"><img src="public/coin.png" alt="Coins">+600<span class="day-label">Day 3</span></div>
+        <div class="reward-day" data-day="4"><img src="public/coin.png" alt="Coins">+700<span class="day-label">Day 4</span></div>
+        <div class="reward-day" data-day="5"><img src="public/coin.png" alt="Coins">+800<span class="day-label">Day 5</span></div>
+        <div class="reward-day" data-day="6"><img src="public/coin.png" alt="Coins">+900<span class="day-label">Day 6</span></div>
+        <div class="reward-day" data-day="7"><img src="public/coin.png" alt="Coins">+1000<span class="day-label">Day 7</span></div>
+      </div>
+      <p>Come back every day for new reward</p>
+      <button id="claim-reward">Claim Reward</button>
+      <span id="reward-timer" style="display: none;">Next Reward in: <span id="timer-display"></span></span>
     </div>
   </div>
 
