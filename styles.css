@@ -118,7 +118,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1.4rem;
+  font-size: 1.6rem; /* Increased from 1.4rem to 1.6rem for lives, coins, timer text */
   font-weight: bold;
   padding: 15px 20px; /* Increased padding for better spacing */
   border-radius: 10px;
@@ -134,8 +134,8 @@ body {
 
 /* Icons (Resized & Spaced) */
 .lives img, .coins img, .timer img {
-  width: 32px;
-  height: 32px; /* Increased from 28px to 32px */
+  width: 40px; /* Increased from 32px to 40px */
+  height: 40px; /* Increased from 32px to 40px */
   margin-right: 8px;
 }
 
@@ -150,15 +150,15 @@ body {
 /* Daily Reward (Aligned below Lives Icon) */
 .daily-reward {
   position: absolute;
-  top: calc(10px + 32px + 5px); /* 10px (header top) + 32px (lives icon height) + 5px (padding) */
+  top: calc(10px + 40px + 5px); /* Adjusted for larger lives icon (32px to 40px) */
   left: 15px; /* Matches the left padding of the lives icon */
   display: flex;
   align-items: center;
 }
 
 .daily-reward img {
-  width: 32px;
-  height: 32px;
+  width: 40px; /* Increased from 32px to 40px */
+  height: 40px; /* Increased from 32px to 40px */
   filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
   transition: transform 0.3s;
 }
@@ -170,11 +170,11 @@ body {
 .daily-reward span {
   display: block;
   position: absolute;
-  top: 32px; /* Position text below the icon */
+  top: 40px; /* Adjusted for larger bonus icon (32px to 40px) */
   left: 50%;
   transform: translateX(-50%);
-  color: var(--tg-theme-text-color, black); /* Black in light mode, white in dark mode with fallback */
-  font-size: 12px;
+  color: var(--tg-theme-text-color, #000000) !important; /* Black in light mode, white in dark mode, overrides inline white */
+  font-size: 14px; /* Increased from 12px to 14px */
   white-space: nowrap;
 }
 
@@ -534,9 +534,6 @@ body {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
   }
-  #day7 {
-    grid-column: auto;
-  }
   .day-card img {
     width: 30px;
     height: 30px;
@@ -549,27 +546,27 @@ body {
   }
   .header {
     top: 5px; /* Reduce header top margin on small screens */
-    font-size: 1.2rem; /* Slightly smaller font for better fit */
+    font-size: 1.4rem; /* Adjusted from 1.2rem to 1.4rem */
     padding: 10px 15px; /* Adjusted padding for smaller screens */
   }
   .lives, .coins, .timer {
     padding: 5px 8px; /* Slightly reduced padding */
   }
   .lives img, .coins img, .timer img {
-    width: 28px;
-    height: 28px; /* Slightly reduced from 32px for better fit */
+    width: 36px; /* Adjusted from 28px to 36px */
+    height: 36px; /* Adjusted from 28px to 36px */
   }
   .daily-reward {
-    top: calc(5px + 28px + 5px); /* Adjusted for smaller header top and lives icon height */
+    top: calc(5px + 36px + 5px); /* Adjusted for smaller header top and lives icon height */
     left: 15px;
   }
   .daily-reward img {
-    width: 28px;
-    height: 28px; /* Reduced for smaller screens */
+    width: 36px; /* Adjusted from 28px to 36px */
+    height: 36px; /* Adjusted from 28px to 36px */
   }
   .daily-reward span {
-    top: 28px; /* Adjusted for smaller icon */
-    font-size: 10px;
+    top: 36px; /* Adjusted for smaller icon */
+    font-size: 12px; /* Adjusted from 10px to 12px */
   }
   .card-grid {
     margin-top: 120px; /* Adjusted margin to account for smaller header and daily-reward */
@@ -593,27 +590,27 @@ body {
   .header {
     top: 0;
     padding: 5px 10px;
-    font-size: 1rem;
+    font-size: 1.2rem; /* Adjusted from 1rem to 1.2rem */
   }
   .lives, .coins, .timer {
     padding: 3px 5px;
   }
   .lives img, .coins img, .timer img {
-    width: 24px;
-    height: 24px; /* Further reduced for very small screens */
+    width: 32px; /* Adjusted from 24px to 32px */
+    height: 32px; /* Adjusted from 24px to 32px */
     margin-right: 10px;
   }
   .daily-reward {
-    top: calc(0px + 24px + 5px); /* Adjusted for smallest header top and lives icon height */
+    top: calc(0px + 32px + 5px); /* Adjusted for smallest header top and lives icon height */
     left: 10px;
   }
   .daily-reward img {
-    width: 24px;
-    height: 24px; /* Further reduced */
+    width: 32px; /* Adjusted from 24px to 32px */
+    height: 32px; /* Adjusted from 24px to 32px */
   }
   .daily-reward span {
-    top: 24px;
-    font-size: 10px;
+    top: 32px; /* Adjusted for smaller icon */
+    font-size: 11px; /* Adjusted from 10px to 11px */
   }
   .card-grid {
     margin-top: 100px;

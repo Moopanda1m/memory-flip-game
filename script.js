@@ -136,6 +136,9 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
     initGame();
+    if (canClaim && dailyRewardIcon) {
+      showDailyRewardPopup();
+    }
   });
 
   // Card Values
@@ -509,9 +512,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   checkDailyRewardEligibility();
-  if (canClaim && startButton) {
-    setTimeout(() => showDailyRewardPopup(), 500);
-  }
 
   // Music Functions
   function playMusic() {
