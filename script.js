@@ -119,10 +119,6 @@ document.addEventListener('DOMContentLoaded', () => {
       loadValue += 5;
       loadingProgress.style.width = loadValue + "%";
 
-      if (loadValue === 0) {
-        playMusic(); // Start music when loading begins
-      }
-
       if (loadValue >= 100) {
         clearInterval(loadingInterval);
         loadingScreen.style.display = "none";
@@ -136,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Start Button Click Event
   startButton.addEventListener("click", () => {
+    playMusic(); // Ensure music plays on first interaction
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
     initGame();
@@ -519,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Music Functions
   function playMusic() {
     if (backgroundMusic) {
-      backgroundMusic.volume = 0.1; // Set to 30% volume to avoid being too loud
+      backgroundMusic.volume = 0.05; // Set to 30% volume to avoid being too loud
       backgroundMusic.loop = true; // Enable looping
       backgroundMusic.play().catch(error => {
         console.log('Autoplay blocked by browser, music will play on user interaction:', error);
@@ -533,8 +530,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Start music when loading begins
-  startButton.addEventListener('click', () => {
+  // Start music on first user interaction
+  startButton.addEventListener("click", () => {
+    playMusic(); // Ensure music plays on first interaction
     startScreen.style.display = "none";
     gameContainer.style.display = "block";
     initGame();

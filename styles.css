@@ -303,7 +303,7 @@ body {
   text-align: center;
   position: relative;
   z-index: 1200;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0posto, 0.2);
 }
 
 .popup-content h2, .popup-content p {
@@ -512,7 +512,7 @@ body {
 
 /* Special layout for 7th day */
 #day7 {
-  grid-column: 2 / 4;
+  grid-column: 1 / 5; /* Span all 4 columns */
 }
 
 /* Responsive Adjustments */
@@ -533,6 +533,9 @@ body {
   .bonus-days {
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
+  }
+  #day7 {
+    grid-column: 1 / 4; /* Span all 3 columns in 3-column layout */
   }
   .day-card img {
     width: 30px;
