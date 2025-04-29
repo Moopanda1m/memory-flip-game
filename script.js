@@ -119,12 +119,15 @@ document.addEventListener('DOMContentLoaded', () => {
       loadValue += 5;
       loadingProgress.style.width = loadValue + "%";
 
+      if (loadValue === 0) {
+        playMusic(); // Start music when loading begins
+      }
+
       if (loadValue >= 100) {
         clearInterval(loadingInterval);
         loadingScreen.style.display = "none";
         startScreen.style.display = "flex";
         gameContainer.classList.remove('hidden');
-        playMusic(); // Start music when loading completes
       }
     }, 150);
   }
@@ -517,6 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function playMusic() {
     if (backgroundMusic) {
       backgroundMusic.volume = 0.1; // Set to 30% volume to avoid being too loud
+      backgroundMusic.loop = true; // Enable looping
       backgroundMusic.play().catch(error => {
         console.log('Autoplay blocked by browser, music will play on user interaction:', error);
       });
@@ -529,21 +533,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Start music when game loads or user interacts
+  // Start music when loading begins
   startButton.addEventListener('click', () => {
-    playMusic();
+    startScreen.style.display = "none";
+    gameContainer.style.display = "block";
+    initGame();
+    if (canClaim && dailyRewardIcon) {
+      showDailyRewardPopup();
+    }
   });
 
-  // Pause music on popup open, resume on close
+  // Do not pause music on popup open, only monitor for potential future needs
   [winPopup, losePopup, noLivesPopup, dailyBonusPopup].forEach(popup => {
-    popup.addEventListener('click', (e) => {
-      if (e.target.tagName === 'BUTTON' || e.target.className === 'close-btn') {
-        pauseMusic();
-      }
-    });
     popup.addEventListener('transitionend', (e) => {
       if (!popup.style.display || popup.style.display === 'none') {
-        playMusic();
+        // No pause action, music continues playing
       }
     });
   });
