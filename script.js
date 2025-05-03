@@ -416,6 +416,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastClaimDate = localStorage.getItem('lastDailyReward');
   let canClaim = false;
   const rewardAmounts = [250, 500, 600, 700, 800, 900, 1000];
+  const WAIT_PERIOD = 86400000; // 1 minute for testing (originally 24 hours = 86400000 ms)
+  const CLAIM_WINDOW = 86400000; // 1 minute for testing (originally 24 hours = 86400000 ms)
 
   function checkDailyRewardEligibility() {
     const now = new Date();
@@ -425,13 +427,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const lastClaim = new Date(lastClaimDate);
     const timeDiff = now - lastClaim;
-    if (timeDiff >= 86400000) {
+
+    // After 24 hours, allow claiming within the next 24 hours
+    if (timeDiff >= WAIT_PERIOD && timeDiff < WAIT_PERIOD + CLAIM_WINDOW) {
       canClaim = true;
-      if (timeDiff > 86400000 + 60 * 1000) {
-        currentDay = 0;
-        localStorage.setItem('dailyRewardDay', currentDay);
-      }
-    } else {
+    }
+    // If more than 48 hours have passed, reset to Day 1
+    else if (timeDiff >= WAIT_PERIOD + CLAIM_WINDOW) {
+      canClaim = true;
+      currentDay = 0;
+      localStorage.setItem('dailyRewardDay', currentDay);
+    }
+    // Before 24 hours, cannot claim
+    else {
       canClaim = false;
     }
     updateNotificationBadge();
@@ -481,7 +489,7 @@ document.addEventListener('DOMContentLoaded', () => {
     coins += rewardAmount;
     localStorage.setItem('coins', coins);
     coinsDisplay.textContent = coins;
-    currentDay = (currentDay + 1) % 7 || 1;
+    currentDay = (currentDay + 1) % 7; // Increment day, reset to 0 after Day 7
     localStorage.setItem('dailyRewardDay', currentDay);
     const now = new Date();
     localStorage.setItem('lastDailyReward', now.toISOString());
