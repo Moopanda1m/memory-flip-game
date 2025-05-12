@@ -178,6 +178,37 @@ body {
   white-space: nowrap;
 }
 
+/* Spin Icon (Aligned below Coins Icon) */
+.spin-icon {
+  position: absolute;
+  top: calc(10px + 40px + 5px); /* Matches daily-reward positioning, aligned with coins */
+  right: 15px; /* Matches the right padding of the coins icon */
+  display: flex;
+  align-items: center;
+}
+
+.spin-icon img {
+  width: 35px; /* Matches size specified in HTML */
+  height: 35px; /* Matches size specified in HTML */
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
+  transition: transform 0.3s;
+}
+
+.spin-icon img:hover {
+  transform: scale(1.2); /* Matches daily-reward hover effect */
+}
+
+.spin-icon span {
+  display: block;
+  position: absolute;
+  top: 40px; /* Matches daily-reward span positioning */
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--tg-theme-text-color, #000000) !important; /* Matches daily-reward text color */
+  font-size: 14px; /* Matches daily-reward font size */
+  white-space: nowrap;
+}
+
 /* Card Grid */
 .card-grid {
   display: grid;
@@ -267,7 +298,7 @@ body {
 }
 
 .hint-list li {
-  display: full-flex;
+  display: flex;
   align-items: center;
   font-size: 1rem;
   color: #333;
@@ -303,7 +334,9 @@ body {
   text-align: center;
   position: relative;
   z-index: 1200;
-  box-shadow: 0 4px 8px rgba(0, 0posto, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  width: 400px;
 }
 
 .popup-content h2, .popup-content p {
@@ -515,6 +548,218 @@ body {
   grid-column: 1 / 5; /* Span all 4 columns */
 }
 
+/* Spin Wheel Popup Styles */
+#spin-wheel-popup {
+  z-index: 1500;
+}
+
+#spin-wheel-popup .spin-wheel-content {
+  background: #ffffff; /* White background */
+  padding: 20px;
+  border-radius: 15px;
+  width: 85%;
+  max-width: 440px; /* Increased from 400px to accommodate larger wheel */
+  text-align: center;
+  color: #333; /* Dark gray for contrast */
+  position: relative;
+}
+
+#spin-wheel-popup .close-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #db3434; /* Red background */
+  border: none;
+  color: white;
+  font-size: 16px; /* Smaller font size */
+  font-weight: bold;
+  cursor: pointer;
+  padding: 4px 8px; /* Smaller padding */
+  border-radius: 50%; /* Circular button */
+  width: 24px; /* Fixed width for circular shape */
+  height: 24px; /* Fixed height for circular shape */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+#spin-wheel-popup .wheel-wrapper {
+  position: relative;
+  width: 340px; /* Increased from 300px */
+  height: 340px; /* Increased from 300px */
+  margin: 20px auto;
+}
+
+#spin-wheel-popup .wheel-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 56px; /* Increased from 50px, proportional to wheel */
+  height: 56px; /* Increased from 50px */
+  background: #333333;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  z-index: 5;
+}
+
+#spin-wheel-popup .indicator {
+  width: 0;
+  height: 0;
+  border-left: 17px solid transparent; /* Increased from 15px */
+  border-right: 17px solid transparent; /* Increased from 15px */
+  border-top: 28px solid white; /* Increased from 25px */
+  position: absolute;
+  top: -28px; /* Adjusted for larger indicator */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+#spin-wheel-popup canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #333333;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+  display: block;
+}
+
+#spin-wheel-popup #confettiCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  z-index: 101;
+  pointer-events: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#spin-wheel-popup .controls {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+#spin-wheel-popup button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 24px;
+  font-weight: bold;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s, transform 0.2s;
+}
+
+#spin-wheel-popup .spin-btn {
+  background-color: #28a745;
+}
+
+#spin-wheel-popup .ad-btn {
+  background-color: #ffc107;
+  color: black;
+}
+
+#spin-wheel-popup button:disabled {
+  background-color: #aaa !important;
+  cursor: not-allowed;
+}
+
+#spin-wheel-popup .message {
+  color: #333; /* Dark gray for contrast */
+  font-size: 16px;
+  font-weight: 500;
+  font-family: monospace;
+}
+
+#spin-wheel-popup .message.timer {
+  font-size: 18px;
+}
+
+/* Spin Win Popup (Nested) */
+#spin-wheel-popup #spinWinPopup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+#spin-wheel-popup .spin-popup-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 90%;
+  width: 300px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  animation: popupFadeIn 0.3s ease-in-out;
+}
+
+#spin-wheel-popup .spin-popup-content.better-luck {
+  animation: betterLuckFade 0.5s ease-in-out;
+}
+
+#spin-wheel-popup .spin-popup-content h2 {
+  margin: 0 0 15px;
+  color: #28a745;
+  font-size: 24px;
+}
+
+#spin-wheel-popup .spin-popup-content p {
+  margin: 0 0 20px;
+  font-size: 18px;
+  color: #333;
+}
+
+#spin-wheel-popup .spin-popup-content .close-btn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 16px;
+}
+
+#spin-wheel-popup .spin-popup-content .close-btn:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes betterLuckFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Responsive Adjustments */
 @media (max-width: 600px) {
   .bonus-container {
@@ -571,6 +816,18 @@ body {
     top: 36px; /* Adjusted for smaller icon */
     font-size: 12px; /* Adjusted from 10px to 12px */
   }
+  .spin-icon {
+    top: calc(5px + 36px + 5px); /* Matches daily-reward responsive adjustment */
+    right: 15px;
+  }
+  .spin-icon img {
+    width: 32px; /* Adjusted for smaller screens */
+    height: 32px; /* Fixed typo from 33px to 32px */
+  }
+  .spin-icon span {
+    top: 36px; /* Adjusted for smaller icon */
+    font-size: 12px; /* Adjusted from 10px to 12px */
+  }
   .card-grid {
     margin-top: 120px; /* Adjusted margin to account for smaller header and daily-reward */
     gap: 8px; /* Slightly reduce gap between cards */
@@ -587,6 +844,35 @@ body {
   .hint-icon {
     font-size: 1rem;
   }
+  #spin-wheel-popup .wheel-wrapper {
+    width: 290px; /* Increased from 250px */
+    height: 290px; /* Increased from 250px */
+  }
+  #spin-wheel-popup canvas {
+    width: 290px;
+    height: 290px;
+  }
+  #spin-wheel-popup .wheel-wrapper::after {
+    width: 48px; /* Increased from 40px, proportional */
+    height: 48px;
+  }
+  #spin-wheel-popup .indicator {
+    border-left: 14px solid transparent; /* Increased from 12px */
+    border-right: 14px solid transparent;
+    border-top: 24px solid white; /* Increased from 20px */
+    top: -24px; /* Adjusted */
+  }
+  #spin-wheel-popup .spin-popup-content {
+    width: 250px;
+  }
+  #spin-wheel-popup .close-btn {
+    top: 6px;
+    right: 6px;
+    width: 20px; /* Smaller size for smaller screens */
+    height: 20px;
+    font-size: 14px; /* Smaller font size */
+    padding: 3px 6px; /* Adjusted padding */
+  }
 }
 
 @media (max-width: 400px) {
@@ -601,7 +887,7 @@ body {
   .lives img, .coins img, .timer img {
     width: 32px; /* Adjusted from 24px to 32px */
     height: 32px; /* Adjusted from 24px to 32px */
-    margin-right: 10px;
+    margin-right: 6px; /* Reduced margin for tighter spacing */
   }
   .daily-reward {
     top: calc(0px + 32px + 5px); /* Adjusted for smallest header top and lives icon height */
@@ -615,12 +901,21 @@ body {
     top: 32px; /* Adjusted for smaller icon */
     font-size: 11px; /* Adjusted from 10px to 11px */
   }
-  .card-grid {
-    margin-top: 100px;
-    gap: 6px;
+  .spin-icon {
+    top: calc(0px + 32px + 5px); /* Matches daily-reward responsive adjustment */
+    right: 10px;
   }
-  .card {
-    border-radius: 6px;
+  .spin-icon img {
+    width: 30px; /* Adjusted for smallest screens */
+    height: 30px; /* Adjusted for smallest screens */
+  }
+  .spin-icon span {
+    top: 32px; /* Adjusted for smaller icon */
+    font-size: 11px; /* Adjusted from 10px to 11px */
+  }
+  .card-grid {
+    margin-top: 100px; /* Further reduced margin for smallest screens */
+    gap: 6px; /* Further reduce gap between cards */
   }
   .hint-container {
     margin-top: 50px;
@@ -633,5 +928,50 @@ body {
   }
   .hint-icon {
     font-size: 0.9rem;
+  }
+  .popup-content {
+    padding: 20px;
+    width: 90%;
+    max-width: 300px;
+  }
+  #spin-wheel-popup .wheel-wrapper {
+    width: 240px; /* Increased from 200px */
+    height: 240px; /* Increased from 200px */
+  }
+  #spin-wheel-popup canvas {
+    width: 240px;
+    height: 240px;
+  }
+  #spin-wheel-popup .wheel-wrapper::after {
+    width: 40px; /* Increased from 30px, proportional */
+    height: 40px;
+  }
+  #spin-wheel-popup .indicator {
+    border-left: 12px solid transparent; /* Increased from 10px */
+    border-right: 12px solid transparent;
+    border-top: 20px solid white; /* Increased from 15px */
+    top: -20px; /* Adjusted */
+  }
+  #spin-wheel-popup .spin-popup-content {
+    width: 200px;
+    padding: 15px;
+  }
+  #spin-wheel-popup .spin-popup-content h2 {
+    font-size: 20px;
+  }
+  #spin-wheel-popup .spin-popup-content p {
+    font-size: 16px;
+  }
+  #spin-wheel-popup .spin-popup-content .close-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  #spin-wheel-popup .close-btn {
+    top: 5px;
+    right: 5px;
+    width: 18px; /* Even smaller for smallest screens */
+    height: 18px;
+    font-size: 12px; /* Smaller font size */
+    padding: 2px 5px; /* Adjusted padding */
   }
 }

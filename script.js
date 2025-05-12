@@ -86,6 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const bonusMessage = document.getElementById('bonus-message');
   const closeBtn = document.querySelector('.close-btn');
 
+  // Spin Wheel DOM Elements
+  const spinIcon = document.getElementById('spin-icon');
+  const spinWheelPopup = document.getElementById('spin-wheel-popup');
+  const spinCloseBtn = spinWheelPopup?.querySelector('.close-btn');
+
   // Music Control
   const backgroundMusic = document.getElementById('background-music');
 
@@ -416,8 +421,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastClaimDate = localStorage.getItem('lastDailyReward');
   let canClaim = false;
   const rewardAmounts = [250, 500, 600, 700, 800, 900, 1000];
-  const WAIT_PERIOD = 86400000; // 1 minute for testing (originally 24 hours = 86400000 ms)
-  const CLAIM_WINDOW = 86400000; // 1 minute for testing (originally 24 hours = 86400000 ms)
+  const WAIT_PERIOD = 86400000; // 24 hours
+  const CLAIM_WINDOW = 86400000; // 24 hours
 
   function checkDailyRewardEligibility() {
     const now = new Date();
@@ -524,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Music Functions
   function playMusic() {
     if (backgroundMusic) {
-      backgroundMusic.volume = 0.05; // Set to 30% volume to avoid being too loud
+      backgroundMusic.volume = 0.05; // Set to 5% volume to avoid being too loud
       backgroundMusic.loop = true; // Enable looping
       backgroundMusic.play().catch(error => {
         console.log('Autoplay blocked by browser, music will play on user interaction:', error);
@@ -557,4 +562,315 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // Spin Wheel Functionality
+  function initializeSpinWheel() {
+    const canvas = document.getElementById("wheelCanvas");
+    const ctx = canvas.getContext("2d");
+    const confettiCanvas = document.getElementById("confettiCanvas");
+    const confettiCtx = confettiCanvas.getContext("2d");
+
+    const segments = [
+      "+100 Coins", "Better Luck", "+1000 Coins", "+200 Coins",
+      "+10 Coins", "Better Luck", "+500 Coins", "+50 Coins"
+    ];
+
+    const colors = [
+      "#4CAF50", // green
+      "#FFC107", // amber
+      "#03A9F4", // sky blue
+      "#FF5722", // deep orange
+      "#9C27B0", // purple
+      "#00BCD4", // cyan
+      "#8BC34A", // light green
+      "#FF9800"  // orange
+    ];
+
+    const spinBtn = document.getElementById("spinBtn");
+    const adBtn = document.getElementById("adBtn");
+    const message = document.getElementById("message");
+    const spinWinPopup = document.getElementById("spinWinPopup");
+    const spinWinMessage = document.getElementById("spinWinMessage");
+    const spinClosePopup = document.getElementById("spinClosePopup");
+    const spinPopupContent = spinWinPopup?.querySelector(".spin-popup-content");
+
+    const anglePerSegment = 360 / segments.length;
+    let rotation = 0;
+    let isSpinning = false;
+    let spinsLeft = 1;
+    const SPIN_KEY = "lastSpinTime";
+    const AD_VIEWS_KEY = "adViews";
+    const COOLDOWN = 60 * 1000; // 1 minute for testing (can change to 86400000 for 24 hours)
+    const MAX_AD_VIEWS = 3;
+
+    // Confetti animation
+    let particles = [];
+
+    function createParticle() {
+      return {
+        x: Math.random() * confettiCanvas.width,
+        y: -10, // Start above canvas
+        size: Math.random() * 10 + 5,
+        speedX: Math.random() * 6 - 3, // -3 to 3
+        speedY: Math.random() * 5 + 2, // 2 to 7
+        color: ['#FFD700', '#FF4500', '#00FF00', '#1E90FF'][Math.floor(Math.random() * 4)],
+        rotation: Math.random() * 360,
+        rotationSpeed: Math.random() * 10 - 5 // -5 to 5
+      };
+    }
+
+    function triggerConfetti() {
+      confettiCanvas.width = spinWheelPopup.offsetWidth;
+      confettiCanvas.height = spinWheelPopup.offsetHeight;
+      confettiCanvas.style.display = "block";
+
+      particles = Array.from({ length: 100 }, createParticle);
+
+      function animateConfetti() {
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        particles.forEach((particle, index) => {
+          particle.x += particle.speedX;
+          particle.y += particle.speedY;
+          particle.rotation += particle.rotationSpeed;
+          particle.speedY += 0.1; // Gravity
+
+          if (particle.y > confettiCanvas.height + particle.size) {
+            particles.splice(index, 1);
+            return;
+          }
+
+          confettiCtx.save();
+          confettiCtx.translate(particle.x, particle.y);
+          confettiCtx.rotate((particle.rotation * Math.PI) / 180);
+          confettiCtx.fillStyle = particle.color;
+          confettiCtx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size);
+          confettiCtx.restore();
+        });
+
+        if (particles.length > 0) {
+          requestAnimationFrame(animateConfetti);
+        } else {
+          confettiCanvas.style.display = "none";
+        }
+      }
+
+      animateConfetti();
+    }
+
+    function formatSpinTime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function startCooldownTimer(lastSpin) {
+      message.classList.add("timer");
+      const updateTimer = () => {
+        const elapsed = Date.now() - lastSpin;
+        const remaining = Math.max(0, COOLDOWN - elapsed);
+        message.textContent = formatSpinTime(remaining);
+        if (remaining > 0) {
+          setTimeout(updateTimer, 1000);
+        } else {
+          spinsLeft = 1;
+          localStorage.setItem(AD_VIEWS_KEY, "0");
+          spinBtn.disabled = false;
+          adBtn.style.display = "none";
+          message.textContent = "";
+          message.classList.remove("timer");
+        }
+      };
+      updateTimer();
+    }
+
+    function drawWheel() {
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = canvas.width / 2 - 20; // Adjust radius for smaller canvas
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(rotation - Math.PI / 2); // Rotate so 0° is at the top
+
+      for (let i = 0; i < segments.length; i++) {
+        const angle = i * (2 * Math.PI / segments.length);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.fillStyle = colors[i];
+        ctx.arc(0, 0, radius, angle, angle + (2 * Math.PI / segments.length));
+        ctx.fill();
+        ctx.strokeStyle = "#333333";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.save();
+        ctx.rotate(angle + (Math.PI / segments.length));
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 14px sans-serif"; // Smaller font for smaller canvas
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+        ctx.shadowBlur = 3;
+        ctx.fillText(segments[i], radius - 15, 0);
+        ctx.restore();
+      }
+
+      ctx.restore();
+    }
+
+    function animateSpin(targetRotation, callback) {
+      const duration = 5000;
+      const start = performance.now();
+      const initialRotation = rotation;
+
+      function animate(time) {
+        const elapsed = time - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progress, 4);
+        rotation = initialRotation + (targetRotation - initialRotation) * easeOut;
+        drawWheel();
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        } else {
+          callback();
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    function getWinningSegment() {
+      const degrees = (rotation * 180 / Math.PI) % 360;
+      const normalizedDegrees = (360 - degrees) % 360;
+      const index = Math.floor(normalizedDegrees / anglePerSegment) % segments.length;
+      return segments[index];
+    }
+
+    function handleSpin() {
+      if (isSpinning || spinsLeft <= 0) return;
+
+      isSpinning = true;
+      spinsLeft--;
+      const lastSpinTime = Date.now();
+      localStorage.setItem(SPIN_KEY, lastSpinTime.toString());
+
+      const adViews = parseInt(localStorage.getItem(AD_VIEWS_KEY) || "0");
+      if (spinsLeft === 0 && adViews < MAX_AD_VIEWS) {
+        adBtn.style.display = "inline-block";
+      } else if (spinsLeft === 0 && adViews >= MAX_AD_VIEWS) {
+        startCooldownTimer(lastSpinTime);
+      }
+
+      const targetRotation = rotation + Math.PI * 10 + Math.random() * 2 * Math.PI;
+      animateSpin(targetRotation, () => {
+        const result = getWinningSegment();
+        spinWinMessage.textContent = `You got: ${result}`;
+        if (result.includes("Coins")) {
+          spinPopupContent.classList.remove("better-luck");
+          setTimeout(triggerConfetti, 50);
+          // Update game coins
+          const coinAmount = parseInt(result.match(/\d+/)[0]);
+          coins += coinAmount;
+          coinsDisplay.textContent = coins;
+          localStorage.setItem('coins', coins);
+        } else {
+          spinPopupContent.classList.add("better-luck");
+        }
+        spinWinPopup.style.display = "flex";
+        isSpinning = false;
+        if (spinsLeft <= 0) spinBtn.disabled = true;
+      });
+    }
+
+    function handleAdWatch() {
+      message.textContent = "Watching ad...";
+      adBtn.disabled = true;
+      show_9069289().then(() => {
+        spinsLeft = 1;
+        const adViews = parseInt(localStorage.getItem(AD_VIEWS_KEY) || "0") + 1;
+        localStorage.setItem(AD_VIEWS_KEY, adViews.toString());
+        spinBtn.disabled = false;
+        adBtn.style.display = "none";
+        adBtn.disabled = false;
+        message.textContent = "You got 1 extra spin!";
+        message.classList.remove("timer");
+      }).catch(() => {
+        adBtn.disabled = false;
+        message.textContent = "Ad failed, try again.";
+      });
+    }
+
+    function loadSpinState() {
+      const lastSpin = parseInt(localStorage.getItem(SPIN_KEY));
+      let adViews = parseInt(localStorage.getItem(AD_VIEWS_KEY) || "0");
+
+      if (lastSpin) {
+        const elapsed = Date.now() - lastSpin;
+        if (elapsed < COOLDOWN) {
+          spinsLeft = adViews >= MAX_AD_VIEWS ? 0 : 1;
+          if (spinsLeft === 0) {
+            spinBtn.disabled = true;
+            if (adViews >= MAX_AD_VIEWS) {
+              startCooldownTimer(lastSpin);
+            } else {
+              adBtn.style.display = "inline-block";
+            }
+          } else if (adViews < MAX_AD_VIEWS) {
+            adBtn.style.display = "inline-block";
+          }
+        } else {
+          spinsLeft = 1;
+          adViews = 0;
+          localStorage.setItem(AD_VIEWS_KEY, "0");
+          spinBtn.disabled = false;
+          adBtn.style.display = "none";
+          message.textContent = "";
+          message.classList.remove("timer");
+        }
+      }
+    }
+
+    // Event Listeners for Spin Wheel
+    if (spinBtn) {
+      spinBtn.addEventListener("click", handleSpin);
+    }
+    if (adBtn) {
+      adBtn.addEventListener("click", handleAdWatch);
+    }
+    if (spinClosePopup) {
+      spinClosePopup.addEventListener("click", () => {
+        spinWinPopup.style.display = "none";
+        spinPopupContent.classList.remove("better-luck");
+        confettiCanvas.style.display = "none";
+        particles = [];
+      });
+    }
+
+    // Draw initial wheel
+    drawWheel();
+    loadSpinState();
+  }
+
+  // Show Spin Wheel Popup
+  function showSpinWheelPopup() {
+    pauseTimer();
+    spinWheelPopup.style.display = 'flex';
+    initializeSpinWheel(); // Initialize wheel when popup is shown
+  }
+
+  // Spin Icon Click Event
+  if (spinIcon) {
+    spinIcon.addEventListener('click', showSpinWheelPopup);
+  }
+
+  // Spin Wheel Popup Close Button
+  if (spinCloseBtn) {
+    spinCloseBtn.addEventListener('click', () => {
+      spinWheelPopup.style.display = 'none';
+      resumeTimer();
+    });
+  }
 });

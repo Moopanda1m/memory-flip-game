@@ -92,6 +92,13 @@
           <span style="display: block; position: absolute; top: 32px; left: 50%; transform: translateX(-50%); color: white; font-size: 12px; white-space: nowrap;">Bonus</span>
         </div>
       </div>
+      <!-- Spin Icon (Aligned below Coins Icon) -->
+      <div class="spin-icon" style="position: absolute; top: 48px; right: 15px;">
+        <div style="position: relative; display: inline-block;">
+          <img src="public/spin.png" alt="Spin Icon" id="spin-icon" style="display: block;">
+          <span style="display: block; position: absolute; top: 34px; left: 50%; transform: translateX(-50%); color: white; font-size: 12px; white-space: nowrap;">Spin</span>
+        </div>
+      </div>
     </div>
 
     <!-- Card Grid -->
@@ -179,6 +186,33 @@
       </div>
       <p class="reminder" id="bonus-message">Come back every day for new rewards!</p>
       <button id="claim-bonus-btn">Claim Reward</button>
+    </div>
+  </div>
+
+  <!-- Spin Wheel Popup -->
+  <div id="spin-wheel-popup" class="popup" style="display: none;">
+    <div class="popup-content spin-wheel-content">
+      <button class="close-btn">×</button>
+      <h2 class="bonus-title">Spin the Wheel</h2>
+      <div class="wheel-wrapper">
+        <div class="indicator"></div>
+        <canvas id="wheelCanvas" width="300" height="300"></canvas>
+      </div>
+      <div class="controls">
+        <button id="spinBtn" class="spin-btn">Spin</button>
+        <button id="adBtn" class="ad-btn" style="display: none;">Watch Ad</button>
+      </div>
+      <div class="message" id="message"></div>
+      <!-- Spin Win Popup (Nested) -->
+      <div id="spinWinPopup" class="spin-popup" style="display: none;">
+        <div class="spin-popup-content">
+          <h2>Congratulations!</h2>
+          <p id="spinWinMessage"></p>
+          <button id="spinClosePopup" class="close-btn">Close</button>
+        </div>
+      </div>
+      <!-- Confetti Canvas -->
+      <canvas id="confettiCanvas" style="display: none;"></canvas>
     </div>
   </div>
 
