@@ -591,7 +591,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = document.getElementById("message");
     const spinWinPopup = document.getElementById("spinWinPopup");
     const spinWinMessage = document.getElementById("spinWinMessage");
-    const spinClosePopup = document.getElementById("spinClosePopup");
+   const spinClosePopup = spinWinPopup?.querySelector(".close-popup-btn");
     const spinPopupContent = spinWinPopup?.querySelector(".spin-popup-content");
 
     const anglePerSegment = 360 / segments.length;

@@ -193,14 +193,14 @@
   <div id="spin-wheel-popup" class="popup" style="display: none;">
     <div class="popup-content spin-wheel-content">
       <button class="close-btn">×</button>
-      <h2 class="bonus-title">Spin the Wheel</h2>
+      <h2 class="bonus-title2">Spin the Wheel</h2>
       <div class="wheel-wrapper">
         <div class="indicator"></div>
         <canvas id="wheelCanvas" width="300" height="300"></canvas>
       </div>
       <div class="controls">
         <button id="spinBtn" class="spin-btn">Spin</button>
-        <button id="adBtn" class="ad-btn" style="display: none;">Watch Ad</button>
+        <button id="adBtn" class="ad-btn" style="display: none;">Free Spin</button>
       </div>
       <div class="message" id="message"></div>
       <!-- Spin Win Popup (Nested) -->
@@ -208,7 +208,7 @@
         <div class="spin-popup-content">
           <h2>Congratulations!</h2>
           <p id="spinWinMessage"></p>
-          <button id="spinClosePopup" class="close-btn">Close</button>
+          <button class="close-popup-btn" onclick="closeSpinWinPopup()">×</button>
         </div>
       </div>
       <!-- Confetti Canvas -->

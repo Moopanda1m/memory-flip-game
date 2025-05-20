@@ -412,7 +412,6 @@ body {
   border-radius: 15px;
   width: 85%;
   max-width: 400px;
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
   text-align: center;
   color: white;
   position: relative;
@@ -442,7 +441,6 @@ body {
   margin-bottom: 20px;
   color: gold;
   text-transform: uppercase;
-  text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
 }
 
 .bonus-days {
@@ -554,30 +552,35 @@ body {
 }
 
 #spin-wheel-popup .spin-wheel-content {
-  background: #ffffff; /* White background */
-  padding: 20px;
-  border-radius: 15px;
-  width: 85%;
-  max-width: 440px; /* Increased from 400px to accommodate larger wheel */
-  text-align: center;
-  color: #333; /* Dark gray for contrast */
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  padding: 0;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: relative;
+  gap: 20px;
 }
 
 #spin-wheel-popup .close-btn {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #db3434; /* Red background */
+  background: #db3434;
   border: none;
   color: white;
-  font-size: 16px; /* Smaller font size */
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
-  padding: 4px 8px; /* Smaller padding */
-  border-radius: 50%; /* Circular button */
-  width: 24px; /* Fixed width for circular shape */
-  height: 24px; /* Fixed height for circular shape */
+  padding: 4px 8px;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -586,8 +589,8 @@ body {
 
 #spin-wheel-popup .wheel-wrapper {
   position: relative;
-  width: 340px; /* Increased from 300px */
-  height: 340px; /* Increased from 300px */
+  width: 380px;
+  height: 380px;
   margin: 20px auto;
 }
 
@@ -596,8 +599,8 @@ body {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 56px; /* Increased from 50px, proportional to wheel */
-  height: 56px; /* Increased from 50px */
+  width: 62px;
+  height: 62px;
   background: #333333;
   border-radius: 50%;
   transform: translate(-50%, -50%);
@@ -608,11 +611,11 @@ body {
 #spin-wheel-popup .indicator {
   width: 0;
   height: 0;
-  border-left: 17px solid transparent; /* Increased from 15px */
-  border-right: 17px solid transparent; /* Increased from 15px */
-  border-top: 28px solid white; /* Increased from 25px */
+  border-left: 19px solid transparent;
+  border-right: 19px solid transparent;
+  border-top: 31px solid white;
   position: absolute;
-  top: -28px; /* Adjusted for larger indicator */
+  top: -31px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
@@ -625,6 +628,10 @@ body {
   background-color: #333333;
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
   display: block;
+}
+
+#spin-wheel-popup .bonus-title2 {
+  color: #ffffff; /* or any color you prefer */ 
 }
 
 #spin-wheel-popup #confettiCanvas {
@@ -674,7 +681,7 @@ body {
 }
 
 #spin-wheel-popup .message {
-  color: #333; /* Dark gray for contrast */
+  color: #ffffff;
   font-size: 16px;
   font-weight: 500;
   font-family: monospace;
@@ -682,6 +689,7 @@ body {
 
 #spin-wheel-popup .message.timer {
   font-size: 18px;
+  color: #ffffff;
 }
 
 /* Spin Win Popup (Nested) */
@@ -699,6 +707,7 @@ body {
 }
 
 #spin-wheel-popup .spin-popup-content {
+  position: relative;
   background: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -708,6 +717,7 @@ body {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   animation: popupFadeIn 0.3s ease-in-out;
 }
+
 
 #spin-wheel-popup .spin-popup-content.better-luck {
   animation: betterLuckFade 0.5s ease-in-out;
@@ -725,17 +735,25 @@ body {
   color: #333;
 }
 
-#spin-wheel-popup .spin-popup-content .close-btn {
-  background-color: #28a745;
+/* close button for win popup */
+#spin-wheel-popup .spin-popup-content .close-popup-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #db3434;
+  border: none;
   color: white;
-  padding: 10px 20px;
-  border-radius: 24px;
   font-size: 16px;
-}
-
-#spin-wheel-popup .spin-popup-content .close-btn:hover {
-  background-color: #218838;
-  transform: scale(1.05);
+  font-weight: bold;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 @keyframes popupFadeIn {
@@ -845,22 +863,22 @@ body {
     font-size: 1rem;
   }
   #spin-wheel-popup .wheel-wrapper {
-    width: 290px; /* Increased from 250px */
-    height: 290px; /* Increased from 250px */
+    width: 320px; /* Increased from 290px */
+    height: 320px; /* Increased from 290px */
   }
   #spin-wheel-popup canvas {
-    width: 290px;
-    height: 290px;
+    width: 320px;
+    height: 320px;
   }
   #spin-wheel-popup .wheel-wrapper::after {
-    width: 48px; /* Increased from 40px, proportional */
-    height: 48px;
+    width: 53px; /* Increased from 48px */
+    height: 53px; /* Increased from 48px */
   }
   #spin-wheel-popup .indicator {
-    border-left: 14px solid transparent; /* Increased from 12px */
-    border-right: 14px solid transparent;
-    border-top: 24px solid white; /* Increased from 20px */
-    top: -24px; /* Adjusted */
+    border-left: 16px solid transparent; /* Increased from 14px */
+    border-right: 16px solid transparent; /* Increased from 14px */
+    border-top: 26px solid white; /* Increased from 24px */
+    top: -26px; /* Adjusted */
   }
   #spin-wheel-popup .spin-popup-content {
     width: 250px;
@@ -902,12 +920,12 @@ body {
     font-size: 11px; /* Adjusted from 10px to 11px */
   }
   .spin-icon {
-    top: calc(0px + 32px + 5px); /* Matches daily-reward responsive adjustment */
+    top: calc(0px + 40px + 5px); /* Matches daily-reward responsive adjustment */
     right: 10px;
   }
   .spin-icon img {
-    width: 30px; /* Adjusted for smallest screens */
-    height: 30px; /* Adjusted for smallest screens */
+    width: 35px; /* Adjusted for smallest screens */
+    height: 35px; /* Adjusted for smallest screens */
   }
   .spin-icon span {
     top: 32px; /* Adjusted for smaller icon */
@@ -935,22 +953,22 @@ body {
     max-width: 300px;
   }
   #spin-wheel-popup .wheel-wrapper {
-    width: 240px; /* Increased from 200px */
-    height: 240px; /* Increased from 200px */
+    width: 260px; /* Increased from 240px */
+    height: 260px; /* Increased from 240px */
   }
   #spin-wheel-popup canvas {
-    width: 240px;
-    height: 240px;
+    width: 260px;
+    height: 260px;
   }
   #spin-wheel-popup .wheel-wrapper::after {
-    width: 40px; /* Increased from 30px, proportional */
-    height: 40px;
+    width: 45px; /* Increased from 40px */
+    height: 45px; /* Increased from 40px */
   }
   #spin-wheel-popup .indicator {
-    border-left: 12px solid transparent; /* Increased from 10px */
-    border-right: 12px solid transparent;
-    border-top: 20px solid white; /* Increased from 15px */
-    top: -20px; /* Adjusted */
+    border-left: 13px solid transparent; /* Increased from 12px */
+    border-right: 13px solid transparent; /* Increased from 12px */
+    border-top: 22px solid white; /* Increased from 20px */
+    top: -22px; /* Adjusted */
   }
   #spin-wheel-popup .spin-popup-content {
     width: 200px;
