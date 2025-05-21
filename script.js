@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let spinsLeft = 1;
     const SPIN_KEY = "lastSpinTime";
     const AD_VIEWS_KEY = "adViews";
-    const COOLDOWN = 60 * 1000; // 1 minute for testing (can change to 86400000 for 24 hours)
+    const COOLDOWN = 86400000; // 1 minute for testing (can change to 86400000 for 24 hours)
     const MAX_AD_VIEWS = 3;
 
     // Confetti animation
