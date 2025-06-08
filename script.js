@@ -113,38 +113,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Initialize Loading Animation
-  function startLoadingAnimation() {
-    let loadValue = 0;
-    const loadingInterval = setInterval(() => {
-      if (!loadingScreen || !loadingProgress) {
-        clearInterval(loadingInterval);
-        console.error('Loading elements not found');
-        return;
-      }
-      loadValue += 5;
-      loadingProgress.style.width = loadValue + "%";
+function startLoadingAnimation() {
+  let loadValue = 0;
+  const loadingInterval = setInterval(() => {
+    if (!loadingScreen || !loadingProgress) {
+      clearInterval(loadingInterval);
+      console.error('Loading elements not found');
+      return;
+    }
+    loadValue += 5;
+    loadingProgress.style.width = loadValue + "%";
 
-      if (loadValue >= 100) {
-        clearInterval(loadingInterval);
-        loadingScreen.style.display = "none";
-        startScreen.style.display = "flex";
-        gameContainer.classList.remove('hidden');
-      }
-    }, 150);
-  }
+    if (loadValue >= 100) {
+      clearInterval(loadingInterval);
+      loadingScreen.style.display = "none";
+      startScreen.style.display = "flex";
+    }
+  }, 150);
+}
 
   startLoadingAnimation();
 
   // Start Button Click Event
   startButton.addEventListener("click", () => {
-    playMusic(); // Ensure music plays on first interaction
-    startScreen.style.display = "none";
-    gameContainer.style.display = "block";
-    initGame();
-    if (canClaim && dailyRewardIcon) {
-      showDailyRewardPopup();
-    }
-  });
+  playMusic();
+  startScreen.style.display = "none";
+  gameContainer.style.display = "block";
+  document.querySelector('.bottom-nav').style.display = "flex"; // Show bottom-nav
+  initGame();
+  if (canClaim && dailyRewardIcon) {
+    showDailyRewardPopup();
+  }
+});
 
   // Card Values
   const cardImages = [
@@ -195,15 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     timerDisplay.textContent = timer;
     isGameRunning = true;
     if (countdownInterval) clearInterval(countdownInterval);
-    countdownInterval = setInterval(() => {
-      if (timer > 0) {
-        timer--;
-        timerDisplay.textContent = timer;
-      } else {
-        clearInterval(countdownInterval);
-        endGame(false);
-      }
-    }, 1000);
+    countdownInterval = setInterval(smartTimer, 1000);
   }
 
   // Pause Timer
@@ -213,6 +205,24 @@ document.addEventListener('DOMContentLoaded', () => {
       countdownInterval = null;
     }
   }
+
+  // Function to check if game tab is active
+function isGameTabActive() {
+  const gameContainer = document.getElementById('game-container');
+  return gameContainer && gameContainer.style.display !== 'none';
+}
+
+// Modified timer function that checks if game tab is active
+function smartTimer() {
+  if (timer > 0 && isGameTabActive()) {
+    timer--;
+    timerDisplay.textContent = timer;
+  } else if (timer <= 0) {
+    clearInterval(countdownInterval);
+    endGame(false);
+  }
+  // If game tab is not active, timer just waits (doesn't decrease)
+}
 
   // Resume Timer
   function resumeTimer() {
@@ -874,3 +884,376 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Bottom Navigation Tab Switching
+document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    // Toggle active class
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+
+    // Get the target tab
+    const tab = item.getAttribute('data-tab');
+
+    // Hide all containers
+    document.getElementById('game-container').style.display = 'none';
+    document.getElementById('referral-container').style.display = 'none';
+    document.getElementById('staking-container').style.display = 'none';
+    document.getElementById('task-container').style.display = 'none';
+    document.getElementById('airdrop-container').style.display = 'none';
+
+    // Show bottom-nav
+    document.querySelector('.bottom-nav').style.display = 'flex';
+
+    // Show the corresponding container
+    if (tab === 'home') {
+      document.getElementById('game-container').style.display = 'block';
+    } else if (tab === 'referral') {
+      document.getElementById('referral-container').style.display = 'block';
+    } else if (tab === 'staking') {
+      document.getElementById('staking-container').style.display = 'block';
+    } else if (tab === 'task') {
+      document.getElementById('task-container').style.display = 'block';
+    } else if (tab === 'airdrop') {
+      document.getElementById('airdrop-container').style.display = 'block';
+    }
+  });
+});
+
+// Referral System
+function getUserId() {
+  const tg = window.Telegram.WebApp;
+  return tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id : 'user_' + Math.random().toString(36).substr(2, 9);
+}
+
+function getUsername() {
+  const tg = window.Telegram.WebApp;
+  return tg.initDataUnsafe.user ? (tg.initDataUnsafe.user.username || tg.initDataUnsafe.user.first_name || 'User_' + getUserId()) : 'User_' + getUserId();
+}
+
+function generateReferralLink() {
+  const userId = getUserId();
+  return `https://t.me/flipgame30bot?start=rngs_${userId}`;
+}
+
+function handleInvite() {
+  const card = event.currentTarget;
+  const ripple = document.createElement('div');
+  const rect = card.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  const x = event.clientX - rect.left - size / 2;
+  const y = event.clientY - rect.top - size / 2;
+
+  ripple.className = 'ripple';
+  ripple.style.cssText = `
+    width: ${size}px;
+    height: ${size}px;
+    left: ${x}px;
+    top: ${y}px;
+  `;
+
+  card.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+
+  handleMainInvite(); // Trigger sharing on card click
+}
+
+function handleMainInvite() {
+  const link = generateReferralLink();
+  const tg = window.Telegram.WebApp;
+  const shareText = `Join me on Memory Card Game and earn 2000 coins! 🎮 ${link}`;
+  tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`);
+  showNotification('Opening share options...');
+}
+
+function refreshFriends() {
+  const refreshBtn = event.currentTarget;
+  const svg = refreshBtn.querySelector('svg');
+
+  svg.style.transform = 'rotate(360deg)';
+  svg.style.transition = 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+
+  setTimeout(() => {
+    svg.style.transform = 'rotate(0deg)';
+    displayReferredUsers();
+    showNotification('Network refreshed');
+  }, 500);
+}
+
+function showNotification(message) {
+  const notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.textContent = message;
+  notification.style.animation = 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+
+  document.body.appendChild(notification);
+
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+    setTimeout(() => notification.remove(), 400);
+  }, 2500);
+}
+
+function displayReferredUsers() {
+  const userId = getUserId();
+  const friendsList = document.getElementById('friends-list');
+  if (!friendsList) return;
+
+  const referrals = JSON.parse(localStorage.getItem(`referrals_${userId}`) || '[]');
+  friendsList.innerHTML = '';
+
+  if (referrals.length === 0) {
+    friendsList.innerHTML = '<div class="empty-state">No invites sent yet</div>';
+  } else {
+    referrals.forEach(username => {
+      const friendItem = document.createElement('div');
+      friendItem.className = 'friend-item';
+      friendItem.textContent = username;
+      friendsList.appendChild(friendItem);
+    });
+  }
+}
+
+function handleReferral() {
+  const userId = getUserId();
+  const urlParams = new URLSearchParams(window.location.search);
+  const referralCode = urlParams.get('start');
+  if (referralCode && referralCode.startsWith('rngs_')) {
+    const referrerId = referralCode.replace('rngs_', '');
+    if (referrerId !== userId) {
+      const referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`) || '[]');
+      const username = getUsername();
+      if (!referrals.includes(username)) {
+        referrals.push(username);
+        localStorage.setItem(`referrals_${referrerId}`, JSON.stringify(referrals));
+
+        let referrerCoins = parseInt(localStorage.getItem(`coins_${referrerId}`) || '0', 10);
+        referrerCoins += 2000;
+        localStorage.setItem(`coins_${referrerId}`, referrerCoins);
+
+        let userCoins = parseInt(localStorage.getItem(`coins_${userId}`) || '0', 10);
+        userCoins += 2000;
+        localStorage.setItem(`coins_${userId}`, userCoins);
+
+        if (userId === getUserId()) {
+          coins = userCoins;
+          coinsDisplay.textContent = coins;
+        }
+
+        showNotification('You earned 2000 coins for joining via referral!');
+      }
+    }
+  }
+  displayReferredUsers();
+}
+
+// Initialize Referral System
+window.addEventListener('load', () => {
+  handleReferral();
+  displayReferredUsers();
+});
+
+// Staking Section
+let selectedPeriod = { days: 28, apy: 0.12 };
+let availableBalance = parseInt(localStorage.getItem('coins') || '0', 10);
+let adWatched = false;
+
+function updateCoinDisplays() {
+  // For staking section (keep with "Coins")
+  document.getElementById('available-balance').textContent = `${availableBalance} Coins`;
+
+  // For main UI (just number, no "Coins")
+  const globalDisplays = document.querySelectorAll('[data-coin-display], #coins');
+  globalDisplays.forEach(el => el.textContent = `${availableBalance}`);
+}
+
+// Handle staking period selection
+document.querySelectorAll('.staking-card').forEach(card => {
+  card.addEventListener('click', function () {
+    document.querySelectorAll('.staking-card').forEach(c => c.classList.remove('selected'));
+    this.classList.add('selected');
+
+    selectedPeriod.days = parseInt(this.dataset.days);
+    selectedPeriod.apy = parseFloat(this.dataset.apy);
+    adWatched = false;
+    calculateEstimatedRewards();
+  });
+});
+
+// Max stake
+document.getElementById('max-stake-btn').addEventListener('click', () => {
+  document.getElementById('stakeAmount').value = availableBalance;
+  calculateEstimatedRewards();
+});
+
+// Estimate rewards
+function calculateEstimatedRewards() {
+  const amount = parseInt(document.getElementById('stakeAmount').value, 10) || 0;
+  if (amount <= 0) {
+    document.getElementById('estimatedRewards').textContent = '~ 0';
+    return;
+  }
+  const apy = adWatched ? selectedPeriod.apy * 2 : selectedPeriod.apy;
+  const reward = Math.round(amount * apy);
+  document.getElementById('estimatedRewards').textContent = `~ ${reward}`;
+}
+
+// Stake Now logic
+document.getElementById('stake-now-btn').addEventListener('click', () => {
+  const amount = parseInt(document.getElementById('stakeAmount').value, 10);
+  if (!amount || amount <= 0) return alert('Please enter a valid amount to stake');
+  if (amount > availableBalance) return alert('Insufficient balance');
+
+  const finalAPY = selectedPeriod.apy * (adWatched ? 2 : 1);
+  const reward = Math.round(amount * finalAPY);
+  const totalReturn = amount + reward;
+
+  alert(`Successfully staked ${amount} tokens for ${selectedPeriod.days} days at ${finalAPY * 100}% APY!`);
+
+  availableBalance -= amount;
+  localStorage.setItem('coins', availableBalance);
+  updateCoinDisplays();
+  calculateEstimatedRewards();
+
+   // Countdown (1 minute)
+  let secondsLeft = 60;
+  localStorage.setItem('stakingEnd', Date.now() + secondsLeft * 1000);
+  localStorage.setItem('stakedAmount', amount);
+  localStorage.setItem('stakedReward', reward);
+  startCountdown(secondsLeft);
+
+  const countdown = setInterval(() => {
+    secondsLeft--;
+    if (timerDisplay) timerDisplay.textContent = `Staking ends in: ${secondsLeft}s`;
+    if (secondsLeft <= 0) {
+      clearInterval(countdown);
+      if (timerDisplay) timerDisplay.textContent = '';
+
+      alert(`🎉 Your staking has matured!\nYou earned ${reward} coins.\nReturning your ${amount} coins too.`);
+
+      availableBalance += totalReturn;
+      localStorage.setItem('coins', availableBalance);
+      updateCoinDisplays();
+      calculateEstimatedRewards();
+      adWatched = false;
+    }
+  }, 1000);
+});
+
+// Ad logic
+document.getElementById('watch-ad-btn').addEventListener('click', () => {
+  adWatched = true;
+  alert('Ad watched! Your APY is now doubled.');
+  calculateEstimatedRewards();
+});
+
+// Initial
+updateCoinDisplays();
+calculateEstimatedRewards();
+
+function startCountdown(secondsLeft) {
+  setStakeUIState(true); // Disable UI on start
+  const timerDisplay = document.getElementById('countdown-timer');
+  if (timerDisplay) timerDisplay.textContent = `Staking ends in: ${secondsLeft}s`;
+
+  const countdown = setInterval(() => {
+    secondsLeft--;
+    if (timerDisplay) timerDisplay.textContent = `Staking ends in: ${secondsLeft}s`;
+
+    if (secondsLeft <= 0) {
+      clearInterval(countdown);
+      if (timerDisplay) timerDisplay.textContent = '';
+
+      // Retrieve values
+      const amount = parseInt(localStorage.getItem('stakedAmount'), 10) || 0;
+      const reward = parseInt(localStorage.getItem('stakedReward'), 10) || 0;
+      const totalReturn = amount + reward;
+
+      alert(`🎉 Your staking has matured!\nYou earned ${reward} coins.\nReturning your ${amount} coins too.`);
+
+      availableBalance += totalReturn;
+      localStorage.setItem('coins', availableBalance);
+
+      // Cleanup
+      localStorage.removeItem('stakingEnd');
+      localStorage.removeItem('stakedAmount');
+      localStorage.removeItem('stakedReward');
+
+      setStakeUIState(false); // Re-enable UI
+      updateCoinDisplays();
+      calculateEstimatedRewards();
+      adWatched = false;
+    }
+  }, 1000);
+}
+
+
+
+const stakeInput = document.getElementById('stakeAmount');
+
+// Prevent invalid characters
+stakeInput.addEventListener('keydown', function (e) {
+  // Allow: backspace, delete, tab, escape, arrows
+  if (
+    [8, 9, 27, 46, 37, 38, 39, 40].includes(e.keyCode) ||
+    (e.keyCode >= 48 && e.keyCode <= 57) || // top 0–9
+    (e.keyCode >= 96 && e.keyCode <= 105)   // numpad 0–9
+  ) {
+    return; // allow
+  }
+  e.preventDefault(); // block anything else (e.g., -, +, e, etc.)
+});
+
+// Also sanitize on input (in case of paste)
+stakeInput.addEventListener('input', function () {
+  this.value = this.value.replace(/[^0-9]/g, ''); // Only digits
+
+  const amount = parseInt(this.value || '0', 10);
+
+  if (amount > availableBalance) {
+    this.classList.add('warning');
+  } else {
+    this.classList.remove('warning');
+  }
+
+  calculateEstimatedRewards();
+  toggleStakeButtonState(); // Coming in next step
+});
+
+// Restore countdown if staking is ongoing
+const savedEnd = localStorage.getItem('stakingEnd');
+if (savedEnd) {
+  const timeLeft = Math.floor((parseInt(savedEnd, 10) - Date.now()) / 1000);
+  if (timeLeft > 0) {
+    setStakeUIState(true); // Lock UI
+    startCountdown(timeLeft);
+  } else {
+    localStorage.removeItem('stakingEnd');
+    localStorage.removeItem('stakedAmount');
+    localStorage.removeItem('stakedReward');
+    setStakeUIState(false); // Unlock just in case
+  }
+}
+
+
+//stake & add button disable
+function toggleStakeButtonState() {
+  const amount = parseInt(stakeInput.value || '0', 10);
+
+  const isValid = amount > 0 && amount <= availableBalance;
+
+  document.getElementById('stake-now-btn').disabled = !isValid;
+  document.getElementById('watch-ad-btn').disabled = !isValid;
+}
+
+function setStakeUIState(disabled) {
+  document.getElementById('stakeAmount').disabled = disabled;
+  document.getElementById('stake-now-btn').disabled = disabled;
+  document.getElementById('watch-ad-btn').disabled = disabled;
+  document.getElementById('max-stake-btn').disabled = disabled;
+
+  const messageEl = document.getElementById('stake-lock-message');
+  if (messageEl) {
+    messageEl.style.display = disabled ? 'block' : 'none';
+  }
+}

@@ -85,6 +85,7 @@
         <img src="public/timer.png" alt="Time">
         <span id="timer">30</span>s
       </div>
+      
       <!-- Adjusted daily-reward with nested structure for text -->
       <div class="daily-reward" style="position: absolute; top: 50px; left: 15px;">
         <div style="position: relative; display: inline-block;">
@@ -114,6 +115,115 @@
       </ul>
     </div>
   </div>
+
+ <!-- Referral Container -->
+    <div class="tab-container" id="referral-container">
+      <div class="header">
+        <h1>Invite Friends</h1>
+        <p>Earn rewards together</p>
+      </div>
+     
+      <div class="invite-card" onclick="handleInvite()">
+        <div class="card-content">
+          <div class="gift-icon">🎁</div>
+          <div class="card-text">
+             <div class="card-title">Invite a friend</div>
+            <div class="card-bonus">
+              <span class="coin-icon"></span>
+              <span class="bonus-amount">+2,000</span> for both of you
+            </div>
+          </div>
+        </div>
+      </div>
+     
+      <div class="friends-section">
+        <div class="section-header">
+          <h3 class="section-title">Your Network</h3>
+          <button class="refresh-btn" onclick="refreshFriends()" title="Refresh">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+              <path d="M21 3v5h-5"/>
+              <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+              <path d="M3 21v-5h5"/>
+            </svg>
+          </button>
+        </div>
+        <div class="friends-list" id="friends-list">
+          <div class="empty-state">No invites sent yet</div>
+        </div>
+      </div>
+     
+      <button class="main-invite-btn" onclick="handleMainInvite()">
+        <span>Share Invite Link</span>
+      </button>
+    </div>
+
+<!-- Staking Tab -->
+<div class="tab-container" id="staking-container">
+  <h2 class="title">Stake Your Tokens</h2>
+
+  <!-- Staking Period Cards -->
+  <div class="staking-options">
+    <div class="staking-card" data-days="7" data-apy="0.025">
+      <div class="staking-number">7</div>
+      <div class="days-label">DAYS</div>
+      <div class="apy-rate">2.5% APY</div>
+    </div>
+    <div class="staking-card" data-days="14" data-apy="0.05">
+      <div class="staking-number">14</div>
+      <div class="days-label">DAYS</div>
+      <div class="apy-rate">5% APY</div>
+    </div>
+    <div class="staking-card selected" data-days="28" data-apy="0.12">
+      <div class="staking-number">28</div>
+      <div class="days-label">DAYS</div>
+      <div class="apy-rate">12% APY</div>
+    </div>
+  </div>
+
+ <div class="amount-section">
+  <div class="amount-label">Amount to Stake</div>
+  
+  <div class="amount-input-container">
+    <input type="number" id="stakeAmount" class="amount-input" placeholder="0">
+    <button class="max-button" id="max-stake-btn">MAX</button>
+  </div>
+
+  <!-- Info Rows -->
+  <div class="info-row">
+  <span class="info-label">Estimated Rewards:</span>
+  <span class="info-value" id="estimatedRewards">~ 0</span>
+</div>
+
+  <div class="info-row">
+    <span class="info-label">Available Balance:</span>
+    <span class="info-value" id="available-balance">0 Coins</span>
+  </div>
+</div>
+
+<div id="countdown-timer"></div>
+<div id="countdown-timer" style="margin-top: 10px; color: #a0a0a0;"></div>
+
+  <!-- Stake Button -->
+  <button class="stake-button" id="stake-now-btn">Stake Now</button>
+
+  <!-- Watch Ad Button -->
+  <button class="ad-button" id="watch-ad-btn">
+    <div class="play-icon">▶</div>
+    <span>2X Stake Now</span>
+  </button>
+</div>
+
+<!-- Task Container -->
+<div class="tab-container" id="task-container">
+  <h2>Task Section</h2>
+  <p>Complete tasks to earn coins!</p>
+</div>
+<!-- Airdrop Container -->
+<div class="tab-container" id="airdrop-container">
+  <h2>Airdrop Section</h2>
+  <p>Participate in airdrops for free rewards!</p>
+</div>
 
   <!-- Pop-Ups -->
   <div id="win-popup" class="popup">
@@ -216,9 +326,33 @@
     </div>
   </div>
 
+<!-- Bottom Navigation Bar -->
+<div class="bottom-nav">
+  <div class="nav-item" data-tab="referral">
+    <img src="public/referral.png" alt="Referral">
+    <span>Referral</span>
+  </div>
+  <div class="nav-item" data-tab="staking">
+    <img src="public/staking.png" alt="Staking">
+    <span>Staking</span>
+  </div>
+  <div class="nav-item active" data-tab="home">
+    <img src="public/home.png" alt="Home">
+    <span>Home</span>
+  </div>
+  <div class="nav-item" data-tab="task">
+    <img src="public/task.png" alt="Task">
+    <span>Task</span>
+  </div>
+  <div class="nav-item" data-tab="airdrop">
+    <img src="public/airdrop.png" alt="Airdrop">
+    <span>Airdrop</span>
+  </div>
+</div>
+
   <!-- Audio Element for Music -->
   <audio id="background-music" src="music/game_music.mp3" loop></audio>
-
+  
   <!-- Game Script -->
   <script src="script.js"></script>
 </body>
