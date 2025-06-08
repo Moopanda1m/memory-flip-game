@@ -1115,12 +1115,13 @@ document.getElementById('stake-now-btn').addEventListener('click', () => {
   updateCoinDisplays();
   calculateEstimatedRewards();
 
-   // Countdown (1 minute)
-  let secondsLeft = 60;
-  localStorage.setItem('stakingEnd', Date.now() + secondsLeft * 1000);
-  localStorage.setItem('stakedAmount', amount);
-  localStorage.setItem('stakedReward', reward);
-  startCountdown(secondsLeft);
+// Countdown based on selected staking duration
+let secondsLeft = selectedPeriod.days * 24 * 60 * 60;
+localStorage.setItem('stakingEnd', Date.now() + secondsLeft * 1000);
+localStorage.setItem('stakedAmount', amount);
+localStorage.setItem('stakedReward', reward);
+startCountdown(secondsLeft);
+
 
   const countdown = setInterval(() => {
     secondsLeft--;
@@ -1142,10 +1143,35 @@ document.getElementById('stake-now-btn').addEventListener('click', () => {
 
 // Ad logic
 document.getElementById('watch-ad-btn').addEventListener('click', () => {
-  adWatched = true;
-  alert('Ad watched! Your APY is now doubled.');
-  calculateEstimatedRewards();
+  show_9425084().then(() => {
+    adWatched = true;
+
+    const amount = parseInt(document.getElementById('stakeAmount').value, 10);
+    if (!amount || amount <= 0) return alert('Please enter a valid amount to stake');
+    if (amount > availableBalance) return alert('Insufficient balance');
+
+    const finalAPY = selectedPeriod.apy * 2; // double APY
+    const reward = Math.round(amount * finalAPY);
+    const totalReturn = amount + reward;
+
+    alert(`✅ Ad watched! You’ve staked ${amount} for ${selectedPeriod.days} days at 2x APY!\nEstimated reward: ${reward} coins.`);
+
+    availableBalance -= amount;
+    localStorage.setItem('coins', availableBalance);
+    updateCoinDisplays();
+    calculateEstimatedRewards();
+
+    // Start countdown immediately based on selected staking duration
+let secondsLeft = selectedPeriod.days * 24 * 60 * 60;
+localStorage.setItem('stakingEnd', Date.now() + secondsLeft * 1000);
+localStorage.setItem('stakedAmount', amount);
+localStorage.setItem('stakedReward', reward);
+startCountdown(secondsLeft);
+  }).catch(() => {
+    alert('❌ Ad was not completed. No bonus applied.');
+  });
 });
+
 
 // Initial
 updateCoinDisplays();
@@ -1154,11 +1180,12 @@ calculateEstimatedRewards();
 function startCountdown(secondsLeft) {
   setStakeUIState(true); // Disable UI on start
   const timerDisplay = document.getElementById('countdown-timer');
-  if (timerDisplay) timerDisplay.textContent = `Staking ends in: ${secondsLeft}s`;
+  if (timerDisplay) timerDisplay.textContent = `Staking ends in: ${formatDuration(secondsLeft)}`;
+
 
   const countdown = setInterval(() => {
     secondsLeft--;
-    if (timerDisplay) timerDisplay.textContent = `Staking ends in: ${secondsLeft}s`;
+    if (timerDisplay) timerDisplay.textContent = `Staking ends in: ${formatDuration(secondsLeft)}`;
 
     if (secondsLeft <= 0) {
       clearInterval(countdown);
@@ -1187,6 +1214,14 @@ function startCountdown(secondsLeft) {
   }, 1000);
 }
 
+function formatDuration(seconds) {
+  const d = Math.floor(seconds / (3600 * 24));
+  const h = Math.floor((seconds % (3600 * 24)) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  return `${d}d ${h.toString().padStart(2, '0')}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
+}
 
 
 const stakeInput = document.getElementById('stakeAmount');
@@ -1235,22 +1270,17 @@ if (savedEnd) {
   }
 }
 
-
-//stake & add button disable
-function toggleStakeButtonState() {
-  const amount = parseInt(stakeInput.value || '0', 10);
-
-  const isValid = amount > 0 && amount <= availableBalance;
-
-  document.getElementById('stake-now-btn').disabled = !isValid;
-  document.getElementById('watch-ad-btn').disabled = !isValid;
-}
-
 function setStakeUIState(disabled) {
   document.getElementById('stakeAmount').disabled = disabled;
   document.getElementById('stake-now-btn').disabled = disabled;
   document.getElementById('watch-ad-btn').disabled = disabled;
   document.getElementById('max-stake-btn').disabled = disabled;
+
+  // Lock/unlock staking cards
+  document.querySelectorAll('.staking-card').forEach(card => {
+    card.classList.toggle('disabled', disabled);  // Add or remove "disabled" class
+    card.style.pointerEvents = disabled ? 'none' : 'auto';  // Disable clicks
+  });
 
   const messageEl = document.getElementById('stake-lock-message');
   if (messageEl) {

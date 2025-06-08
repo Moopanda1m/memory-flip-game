@@ -1691,7 +1691,6 @@ html, body {
   transition: all 0.3s ease;
 }
 
-
 .amount-input:focus {
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
@@ -1798,4 +1797,10 @@ button:disabled {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+#countdown-timer {
+  font-size: 10px; /* or try 12px, 10px — adjust to your liking */
+  font-weight: normal;
+  color: #555; /* optional: make it softer */
 }
