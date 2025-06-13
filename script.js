@@ -100,7 +100,9 @@ document.addEventListener('DOMContentLoaded', () => {
   tg.expand();
   tg.enableClosingConfirmation();
 
-  const startParam = tg.initDataUnsafe?.start_param;
+const startParam = tg.initDataUnsafe?.start_param;
+alert("Referral Code: " + startParam); // 👈 this will pop up the code
+
 const telegramUserId = tg.initDataUnsafe?.user?.id;
 
 if (startParam && telegramUserId) {
@@ -113,6 +115,7 @@ if (startParam && telegramUserId) {
     }),
   }).then(res => console.log("Referral saved:", res.status));
 }
+
 
   // Enable Back Button
   tg.BackButton.show();
