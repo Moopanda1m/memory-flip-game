@@ -100,23 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
   tg.expand();
   tg.enableClosingConfirmation();
 
-const startParam = tg.initDataUnsafe?.start_param;
-alert("Referral Code: " + startParam); // 👈 this will pop up the code
-
-const telegramUserId = tg.initDataUnsafe?.user?.id;
-
-if (startParam && telegramUserId) {
-  fetch("/api/saveReferral", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      referral_code: startParam,
-      telegram_id: telegramUserId
-    }),
-  }).then(res => console.log("Referral saved:", res.status));
-}
-
-
   // Enable Back Button
   tg.BackButton.show();
   tg.BackButton.onClick(() => {
@@ -161,7 +144,23 @@ function startLoadingAnimation() {
   if (canClaim && dailyRewardIcon) {
     showDailyRewardPopup();
   }
+
+  // ✅ Referral tracking only runs when the user starts the game
+  const startParam = tg.initDataUnsafe?.start_param;
+  const telegramUserId = tg.initDataUnsafe?.user?.id;
+
+  if (startParam && telegramUserId) {
+    fetch("/api/saveReferral", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        referral_code: startParam,
+        telegram_id: telegramUserId
+      }),
+    }).then(res => console.log("Referral saved on Start:", res.status));
+  }
 });
+
 
   // Card Values
   const cardImages = [
