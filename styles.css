@@ -1584,6 +1584,7 @@ html, body {
 /* Staking Tab */
 #staking-container {
   padding: 20px;
+  padding-bottom: 100px;
   color: white; /* Ensure text is white */
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
 }
@@ -1784,8 +1785,11 @@ button:disabled {
   align-items: center;
   justify-content: center;
   gap: 10px;
-}
+  margin-bottom: 90px;
+  position: relative;
+  z-index: 10;
 
+}
 
 .play-icon {
   width: 30px;
@@ -1801,7 +1805,224 @@ button:disabled {
 }
 
 #countdown-timer {
-  font-size: 10px; /* or try 12px, 10px — adjust to your liking */
+  font-size: 15px; /* or try 12px, 10px — adjust to your liking */
   font-weight: normal;
-  color: #555; /* optional: make it softer */
+  color: #fc0202; /* optional: make it softer */
+}
+
+
+/* Tablet and smaller screens */
+@media (max-width: 768px) {
+  #staking-container {
+    padding: 15px;
+    padding-bottom: 80px;
+  }
+
+  .title {
+    font-size: 1.5rem !important;
+    margin-bottom: 30px;
+  }
+
+  .staking-options {
+    display: flex; /* Keep flex layout */
+    flex-direction: row; /* Force horizontal layout */
+    gap: 8px;
+    margin-bottom: 25px;
+  }
+
+  .staking-card {
+    flex: 1; /* Maintain equal width distribution */
+    padding: 14px 8px;
+    min-width: 0; /* Allow cards to shrink if needed */
+  }
+
+  .staking-number {
+    font-size: 1.6rem;
+  }
+
+  .days-label {
+    font-size: 0.7rem;
+  }
+
+  .apy-rate {
+    font-size: 0.8rem;
+  }
+
+  .amount-section {
+    padding: 20px;
+    margin-bottom: 25px;
+  }
+
+  .amount-input {
+    padding: 20px 60px 20px 20px;
+    font-size: 1.5rem;
+  }
+
+  .max-button {
+    right: 12px;
+    font-size: 0.9rem;
+  }
+
+  .info-row {
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+  }
+
+  .stake-button, .ad-button {
+    padding: 18px;
+    font-size: 1.1rem;
+  }
+
+  .ad-button {
+    margin-bottom: 70px;
+  }
+
+  .play-icon {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  #staking-container {
+    padding: 12px;
+    padding-bottom: 60px;
+  }
+
+  .title {
+    font-size: 1.3rem !important;
+    margin-bottom: 25px;
+  }
+
+  .staking-options {
+    display: flex; /* Keep flex layout */
+    flex-direction: row; /* Force horizontal layout */
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .staking-card {
+    flex: 1; /* Maintain equal width distribution */
+    padding: 12px 6px;
+    min-width: 0; /* Allow cards to shrink if needed */
+  }
+
+  .staking-number {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+  }
+
+  .days-label {
+    font-size: 0.65rem;
+    margin-bottom: 6px;
+  }
+
+  .apy-rate {
+    font-size: 0.75rem;
+  }
+
+  .amount-section {
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+
+  .amount-label {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+
+  .amount-input {
+    padding: 16px 50px 16px 16px;
+    font-size: 1.3rem;
+  }
+
+  .max-button {
+    right: 10px;
+    font-size: 0.8rem;
+  }
+
+  .info-row {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+
+  .stake-button, .ad-button {
+    padding: 16px;
+    font-size: 1rem;
+  }
+
+  .ad-button {
+    margin-bottom: 50px;
+    gap: 8px;
+  }
+
+  .play-icon {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+  }
+
+  #countdown-timer {
+    font-size: 9px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .title {
+    font-size: 1.1rem !important;
+  }
+
+  .staking-options {
+    gap: 4px; /* Reduce gap for very small screens */
+  }
+
+  .staking-card {
+    padding: 10px 4px;
+  }
+
+  .staking-number {
+    font-size: 1.2rem;
+  }
+
+  .days-label {
+    font-size: 0.6rem;
+  }
+
+  .apy-rate {
+    font-size: 0.7rem;
+  }
+
+  .amount-input {
+    font-size: 1.1rem;
+    padding: 14px 45px 14px 14px;
+  }
+
+  .max-button {
+    font-size: 0.75rem;
+  }
+
+  .info-row {
+    font-size: 0.8rem;
+  }
+
+  .stake-button, .ad-button {
+    font-size: 0.9rem;
+    padding: 14px;
+  }
+}
+
+/* Ensure text remains readable on all screen sizes */
+@media (max-width: 768px) {
+  .amount-input::placeholder {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .amount-input::placeholder {
+    font-size: 1rem;
+  }
 }
