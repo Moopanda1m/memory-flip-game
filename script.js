@@ -1037,12 +1037,15 @@ function handleReferral() {
   if (referralCode && referralCode.startsWith('rngs_')) {
     const referrerId = referralCode.replace('rngs_', '');
     if (referrerId !== userId) {
-      const referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`) || '[]');
-      const username = getUsername();
-      if (!referrals.includes(username)) {
+    const referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`)|| '[]');
+    const username = getUsername();
+
+    if (!referrals.includes(username)) {
+        // Add to local storage
         referrals.push(username);
         localStorage.setItem(`referrals_${referrerId}`, JSON.stringify(referrals));
 
+        // Give coins to both users
         let referrerCoins = parseInt(localStorage.getItem(`coins_${referrerId}`) || '0', 10);
         referrerCoins += 2000;
         localStorage.setItem(`coins_${referrerId}`, referrerCoins);
@@ -1050,6 +1053,17 @@ function handleReferral() {
         let userCoins = parseInt(localStorage.getItem(`coins_${userId}`) || '0', 10);
         userCoins += 2000;
         localStorage.setItem(`coins_${userId}`, userCoins);
+
+        // Update global coin display
+        document.querySelectorAll('[data-coin-display], #coins').forEach(el => el.textContent = userCoins);
+
+        // Save to Supabase
+        await saveReferralToSupabase(referrerId, username);
+
+        showNotification('You earned 2000 coins for joining via referral!');
+        displayReferredUsers(); // Refreshes the referral list
+    }
+}
 
         if (userId === getUserId()) {
           coins = userCoins;
@@ -1302,4 +1316,22 @@ function setStakeUIState(disabled) {
   if (messageEl) {
     messageEl.style.display = disabled ? 'block' : 'none';
   }
+}
+
+async function saveReferralToSupabase(referrerId, referredUsername) {
+    const response = await fetch('https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals',  {
+        method: 'POST',
+        headers: {
+            apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal'
+        },
+        body: JSON.stringify({
+            referrer_id: referrerId,
+            referred_username: referredUsername
+        })
+    });
+
+    return response.ok;
 }
