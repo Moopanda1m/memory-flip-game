@@ -165,23 +165,7 @@ function startLoadingAnimation() {
   if (canClaim && dailyRewardIcon) {
     showDailyRewardPopup();
   }
-
-  // ✅ Referral tracking only runs when the user starts the game
-  const startParam = tg.initDataUnsafe?.start_param;
-  const telegramUserId = tg.initDataUnsafe?.user?.id;
-
-  if (startParam && telegramUserId) {
-    fetch("/api/saveReferral", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        referral_code: startParam,
-        telegram_id: telegramUserId
-      }),
-    }).then(res => console.log("Referral saved on Start:", res.status));
-  }
 });
-
 
   // Card Values
   const cardImages = [
@@ -1362,24 +1346,14 @@ function setStakeUIState(disabled) {
   }
 }
 
-async function saveReferralToSupabase(referrerId, referredUsername) {
-    const response = await fetch('https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals',  {
-        method: 'POST',
-        headers: {
-            apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
-            'Content-Type': 'application/json',
-            Prefer: 'return=minimal'
-        },
-        body: JSON.stringify({
-            referrer_id: referrerId,
-            referred_username: referredUsername
-        })
-    });
-
-    return response.ok;
-}
 // Initialize Referral System
 window.addEventListener('load', () => {
   handleReferral();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  setTimeout(() => {
+    handleReferral();
+    displayReferredUsers();
+  }, 1000);
 });
