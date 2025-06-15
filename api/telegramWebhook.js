@@ -2,6 +2,8 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Only POST allowed');
 
   const body = req.body;
+  console.log("📩 Telegram sent this message:", JSON.stringify(body));
+
 
   const token = "7942048169:AAEnNrMPJBKWFngn6EQVFQOfk7-bPmm3PfY";
   const telegramApi = `https://api.telegram.org/bot${token}/sendMessage`;
