@@ -1,3 +1,24 @@
+async function saveReferral(referrerId, telegramId) {
+  try {
+    const response = await fetch("/api/saveReferral", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        referral_code: referrerId,
+        telegram_id: telegramId
+      })
+    });
+
+    if (!response.ok) {
+      console.error("Failed to save referral:", response.statusText);
+    }
+  } catch (error) {
+    console.error("Error saving referral:", error);
+  }
+}
+
 // Define and expose initializeTONConnect globally
 function initializeTONConnect() {
   const tonConnectRoot = document.getElementById('ton-connect-root');
@@ -1010,18 +1031,45 @@ function showNotification(message) {
   }, 2500);
 }
 
-function displayReferredUsers() {
+async function displayReferredUsers() {
   const userId = getUserId();
   const friendsList = document.getElementById('friends-list');
   if (!friendsList) return;
 
-  const referrals = JSON.parse(localStorage.getItem(`referrals_${userId}`) || '[]');
-  friendsList.innerHTML = '';
+  friendsList.innerHTML = ''; // Clear existing list
 
-  if (referrals.length === 0) {
-    friendsList.innerHTML = '<div class="empty-state">No invites sent yet</div>';
-  } else {
-    referrals.forEach(username => {
+  // Get local referrals
+  const localReferrals = JSON.parse(localStorage.getItem(`referrals_${userId}`) || '[]');
+
+  // Get remote referrals from Supabase
+  try {
+    const response = await fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${userId}`, {
+      method: 'GET',
+      headers: {
+        apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ'
+      }
+    });
+
+    if (response.ok) {
+      const remoteReferrals = await response.json();
+      const usernames = [...new Set([...localReferrals, ...remoteReferrals.map(r => r.telegram_id)])];
+
+      if (usernames.length === 0) {
+        friendsList.innerHTML = '<div class="empty-state">No invites sent yet</div>';
+      } else {
+        usernames.forEach(username => {
+          const friendItem = document.createElement('div');
+          friendItem.className = 'friend-item';
+          friendItem.textContent = username;
+          friendsList.appendChild(friendItem);
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Failed to fetch referrals from Supabase:", error);
+    // Fallback to showing just local referrals
+    localReferrals.forEach(username => {
       const friendItem = document.createElement('div');
       friendItem.className = 'friend-item';
       friendItem.textContent = username;
@@ -1043,11 +1091,11 @@ async function handleReferral() {
       const username = getUsername();
 
       if (!referrals.includes(username)) {
-        // Add user to referrer's list
+        // Add user to local referral list
         referrals.push(username);
         localStorage.setItem(`referrals_${referrerId}`, JSON.stringify(referrals));
 
-        // Give 2000 coins to both users
+        // Give both users 2000 coins
         let referrerCoins = parseInt(localStorage.getItem(`coins_${referrerId}`) || '0', 10);
         referrerCoins += 2000;
         localStorage.setItem(`coins_${referrerId}`, referrerCoins);
@@ -1057,22 +1105,21 @@ async function handleReferral() {
         localStorage.setItem(`coins_${userId}`, userCoins);
 
         // Update global coin display
-        const coinDisplays = document.querySelectorAll('[data-coin-display], #coins');
-        coinDisplays.forEach(el => {
+        document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
           if (el) el.textContent = userCoins;
         });
 
-        // Save to Supabase
-        await saveReferralToSupabase(referrerId, username);
+        // Save referral to Supabase
+        await saveReferral(referrerId, userId); // Save to Supabase
 
         // Show notification and refresh UI
         showNotification('You earned 2000 coins for joining via referral!');
-        displayReferredUsers(); // Refresh referral list
+        displayReferredUsers(); // Refreshes UI
       }
     }
   }
 
-  displayReferredUsers(); // Final refresh (optional)
+  displayReferredUsers(); // Final refresh
 }
 // Initialize Referral System
 window.addEventListener('load', () => {
