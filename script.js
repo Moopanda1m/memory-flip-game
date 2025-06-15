@@ -1064,8 +1064,8 @@ async function displayReferredUsers() {
 
 async function handleReferral() {
   const userId = getUserId();
-  const urlParams = new URLSearchParams(window.location.search);
-  const referralCode = urlParams.get('start');
+  const tg = window.Telegram.WebApp;
+  const referralCode = tg.initDataUnsafe?.start_param;
 
   if (referralCode && referralCode.startsWith('rngs_')) {
     const referrerId = referralCode.replace('rngs_', '');
@@ -1105,6 +1105,7 @@ async function handleReferral() {
 
   displayReferredUsers(); // Final refresh
 }
+
 // Initialize Referral System
 window.addEventListener('load', () => {
   handleReferral();
