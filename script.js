@@ -1030,22 +1030,24 @@ function displayReferredUsers() {
   }
 }
 
-function handleReferral() {
+async function handleReferral() {
   const userId = getUserId();
   const urlParams = new URLSearchParams(window.location.search);
   const referralCode = urlParams.get('start');
+
   if (referralCode && referralCode.startsWith('rngs_')) {
     const referrerId = referralCode.replace('rngs_', '');
-    if (referrerId !== userId) {
-    const referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`)|| '[]');
-    const username = getUsername();
 
-    if (!referrals.includes(username)) {
-        // Add to local storage
+    if (referrerId !== userId) {
+      const referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`) || '[]');
+      const username = getUsername();
+
+      if (!referrals.includes(username)) {
+        // Add user to referrer's list
         referrals.push(username);
         localStorage.setItem(`referrals_${referrerId}`, JSON.stringify(referrals));
 
-        // Give coins to both users
+        // Give 2000 coins to both users
         let referrerCoins = parseInt(localStorage.getItem(`coins_${referrerId}`) || '0', 10);
         referrerCoins += 2000;
         localStorage.setItem(`coins_${referrerId}`, referrerCoins);
@@ -1055,28 +1057,23 @@ function handleReferral() {
         localStorage.setItem(`coins_${userId}`, userCoins);
 
         // Update global coin display
-        document.querySelectorAll('[data-coin-display], #coins').forEach(el => el.textContent = userCoins);
+        const coinDisplays = document.querySelectorAll('[data-coin-display], #coins');
+        coinDisplays.forEach(el => {
+          if (el) el.textContent = userCoins;
+        });
 
         // Save to Supabase
         await saveReferralToSupabase(referrerId, username);
 
+        // Show notification and refresh UI
         showNotification('You earned 2000 coins for joining via referral!');
-        displayReferredUsers(); // Refreshes the referral list
-    }
-}
-
-        if (userId === getUserId()) {
-          coins = userCoins;
-          coinsDisplay.textContent = coins;
-        }
-
-        showNotification('You earned 2000 coins for joining via referral!');
+        displayReferredUsers(); // Refresh referral list
       }
     }
   }
-  displayReferredUsers();
-}
 
+  displayReferredUsers(); // Final refresh (optional)
+}
 // Initialize Referral System
 window.addEventListener('load', () => {
   handleReferral();
