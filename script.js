@@ -1104,13 +1104,13 @@ async function handleReferral() {
         userCoins += 2000;
         localStorage.setItem(`coins_${userId}`, userCoins);
 
-        // Update global coin display
+        // Update coin display
         document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
           if (el) el.textContent = userCoins;
         });
 
         // Save referral to Supabase
-        await saveReferral(referrerId, userId); // Save to Supabase
+        await saveReferral(referrerId, userId); // Send to backend
 
         // Show notification and refresh UI
         showNotification('You earned 2000 coins for joining via referral!');
@@ -1379,3 +1379,7 @@ async function saveReferralToSupabase(referrerId, referredUsername) {
 
     return response.ok;
 }
+// Initialize Referral System
+window.addEventListener('load', () => {
+  handleReferral();
+});
