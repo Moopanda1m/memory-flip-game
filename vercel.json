@@ -1,12 +1,14 @@
 {
+  "builds": [
+    {
+      "src": "**/*",
+      "use": "@vercel/static"
+    }
+  ],
   "rewrites": [
     {
       "source": "/tonconnect-manifest.json",
       "destination": "/tonconnect-manifest.json"
-    },
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
     },
     {
       "source": "/(.*)",
