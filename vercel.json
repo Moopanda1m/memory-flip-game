@@ -20,6 +20,10 @@
     {
       "src": "music/**",
       "use": "@vercel/static"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -49,7 +53,7 @@
     {
       "src": "/(.*\\.png)",
       "headers": {
-       "Content-Type": "image/png"
+        "Content-Type": "image/png"
       },
       "dest": "/$1"
     },
@@ -59,13 +63,6 @@
         "Content-Type": "audio/mpeg"
       },
       "dest": "/music/$1"
-    },
-    {
-      "src": "/(.*\\.html)",
-      "headers": {
-        "Content-Type": "text/html"
-      },
-      "dest": "/public/$1"
     },
     {
       "src": "/(.*)",
