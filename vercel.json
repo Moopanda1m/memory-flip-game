@@ -20,10 +20,6 @@
     {
       "src": "music/**",
       "use": "@vercel/static"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
