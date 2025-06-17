@@ -17,7 +17,7 @@ export default async function handler(req, res) {
       const parts = messageText.split(" ");
       const referralCode = parts.length > 1 ? parts[1] : null;
 
-      let welcome = "🎉 *Welcome to $PANDA Mining Bot!* 🐼\n\nGet ready to earn $PANDA Coins effortlessly! Play games, complete missions, and start collecting rewards today.\n\nThe more you engage, the more $PANDA you earn!\n\n🚀 Invite your friends and boost your rewards — your journey to valuable crypto starts here!";
+      let welcome = "🎉 Welcome to PANDA Mining Bot! 🐼\n\nGet ready to earn $PANDA Coins effortlessly! Play games, complete missions, and start collecting rewards today.\n\nThe more you engage, the more $PANDA you earn!\n\n🚀 Invite your friends and boost your rewards — your journey to valuable crypto starts here!";
 
       const payload = {
         chat_id: chatId,
@@ -26,19 +26,19 @@ export default async function handler(req, res) {
           inline_keyboard: [
             [
               {
-                text: "Play & Earn ▶️",
+                text: "Open App",
                 url: "https://memoryflip-game-app.vercel.app", // 🔁 CHANGE THIS
               },
             ],
             [
               {
-                text: "Join Telegram",
+                text: "Join Our Community",
                 url: "https://t.me/moopanda1m", // 🔁 CHANGE THIS
               },
             ],
             [
               {
-                text: "Follow X",
+                text: "Follow Our Twitter",
                 url: "https://x.com/FlipgameTon", // 🔁 CHANGE THIS
               },
             ],
