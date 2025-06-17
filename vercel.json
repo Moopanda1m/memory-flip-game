@@ -49,9 +49,9 @@
     {
       "src": "/(.*\\.png)",
       "headers": {
-        "Content-Type": "image/png"
+       "Content-Type": "image/png"
       },
-      "dest": "/public/$1"
+      "dest": "/$1"
     },
     {
       "src": "/(.*\\.mp3)",
