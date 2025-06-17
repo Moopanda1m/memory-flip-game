@@ -21,9 +21,12 @@ The more you engage, the more $PANDA you earn!
 
 🚀 Invite your friends and boost your rewards — your journey to valuable crypto starts here!`;
 
+      // 🖼️ Just change this filename only
+      const imageFileName = "tonpandaimage.jpg";
+
       const payload = {
         chat_id: chatId,
-        photo: "tonpandaimage.jpg", // 🔁 CHANGE this to your image URL
+        photo: `https://memoryflip-game-app.vercel.app/${imageFileName}`, // full URL is auto-constructed
         caption: welcomeMessage,
         parse_mode: "Markdown",
         reply_markup: {
