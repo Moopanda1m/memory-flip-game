@@ -6,22 +6,53 @@
       "use": "@vercel/node"
     },
     {
-      "src": "public/**",
+      "src": "index.html",
       "use": "@vercel/static"
     },
     {
-      "src": "**/*",
+      "src": "styles.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "script.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "music/**",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "public/**",
       "use": "@vercel/static"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "src": "/api/telegramWebhook",
+      "methods": ["POST"],
+      "dest": "/api/telegramWebhook.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/api/(.*)",
+      "dest": "/api/$1.js"
+    },
+    {
+      "src": "/(.*\\.js)",
+      "headers": {
+        "Content-Type": "application/javascript"
+      },
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*\\.css)",
+      "headers": {
+        "Content-Type": "text/css"
+      },
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
