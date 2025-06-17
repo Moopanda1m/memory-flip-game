@@ -27,29 +27,31 @@ export default async function handler(req, res) {
             [
               {
                 text: "Open App",
-                url: "https://memoryflip-game-app.vercel.app", // 🔁 CHANGE THIS
-              },
+                web_app: {
+                  url: "https://memoryflip-game-app.vercel.app" // ✅ now a proper Telegram Mini App
+                }
+              }
             ],
             [
               {
                 text: "Join Our Community",
-                url: "https://t.me/moopanda1m", // 🔁 CHANGE THIS
-              },
+                url: "https://t.me/moopanda1m"
+              }
             ],
             [
               {
                 text: "Follow Our Twitter",
-                url: "https://x.com/FlipgameTon", // 🔁 CHANGE THIS
-              },
-            ],
-          ],
-        },
+                url: "https://x.com/FlipgameTon"
+              }
+            ]
+          ]
+        }
       };
 
       await fetch(telegramUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload)
       });
 
       return res.status(200).send("Handled /start with buttons");
