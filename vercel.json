@@ -47,6 +47,27 @@
       "dest": "/$1"
     },
     {
+      "src": "/(.*\\.png)",
+      "headers": {
+        "Content-Type": "image/png"
+      },
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*\\.mp3)",
+      "headers": {
+        "Content-Type": "audio/mpeg"
+      },
+      "dest": "/music/$1"
+    },
+    {
+      "src": "/(.*\\.html)",
+      "headers": {
+        "Content-Type": "text/html"
+      },
+      "dest": "/public/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
