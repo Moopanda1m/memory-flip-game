@@ -15,13 +15,12 @@
   ],
   "rewrites": [
     {
-      "source": "/api/:match*",
-      "destination": "/api/:match*"
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ]
 }
-
