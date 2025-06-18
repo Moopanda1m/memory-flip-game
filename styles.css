@@ -1047,6 +1047,8 @@ body {
   height: 65px;
   background-color: #000000 !important;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top-left-radius: 16px;
+border-top-right-radius: 16px;
   display: none; /* Changed from display: flex */
   justify-content: space-around;
   align-items: center;
@@ -1579,6 +1581,23 @@ html, body {
       opacity: 0;
     }
   }
+}
+/* ================= Referral Styles ================= */
+
+#referral-container .referral-box {
+  background-color: #e3fce3;
+  color: #065f46;
+  font-weight: bold;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+#referral-container .no-referral {
+  color: gray;
+  text-align: center;
+  margin-top: 10px;
 }
 
 /* Staking Tab */

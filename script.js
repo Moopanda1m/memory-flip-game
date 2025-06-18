@@ -1016,19 +1016,25 @@ function showNotification(message) {
 }
 
 async function displayReferredUsers() {
-  const userId = getUserId();
-  const friendsList = document.getElementById('friends-list');
-  if (!friendsList) return;
+  const tg = window.Telegram.WebApp;
+  const userId = tg.initDataUnsafe?.user?.id?.toString();
+  const friendsList = document.getElementById("friends-list");
+  if (!friendsList || !userId) return;
 
-  friendsList.innerHTML = ''; // Clear existing list
+  friendsList.innerHTML = ""; // Clear existing
 
-  // Get local referrals
-  const localReferrals = JSON.parse(localStorage.getItem(`referrals_${userId}`) || '[]');
+  // 1. Show referral bonus if the user joined with a referral
+  const referralKey = `referral_done_for_${userId}`;
+  if (localStorage.getItem(referralKey)) {
+    const refMsg = document.createElement("div");
+    refMsg.className = "referral-box";
+    refMsg.textContent = "✅ You joined with a referral and earned +2000 $PANDA!";
+    friendsList.appendChild(refMsg);
+  }
 
-  // Get remote referrals from Supabase
+  // 2. Fetch referrals sent by this user
   try {
     const response = await fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${userId}`, {
-      method: 'GET',
       headers: {
         apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
         Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ'
@@ -1036,75 +1042,58 @@ async function displayReferredUsers() {
     });
 
     if (response.ok) {
-      const remoteReferrals = await response.json();
-      const usernames = [...new Set([...localReferrals, ...remoteReferrals.map(r => r.telegram_id)])];
+      const referrals = await response.json();
 
-      if (usernames.length === 0) {
-        friendsList.innerHTML = '<div class="empty-state">No invites sent yet</div>';
-      } else {
-        usernames.forEach(username => {
-          const friendItem = document.createElement('div');
-          friendItem.className = 'friend-item';
-          friendItem.textContent = username;
-          friendsList.appendChild(friendItem);
+      if (referrals.length > 0) {
+        referrals.forEach(r => {
+          const el = document.createElement("div");
+          el.className = "friend-item";
+          el.textContent = `👤 User ${r.telegram_id}`;
+          friendsList.appendChild(el);
         });
+      } else if (!localStorage.getItem(referralKey)) {
+        friendsList.innerHTML = '<div class="no-referral">No invites sent yet.</div>';
       }
     }
-  } catch (error) {
-    console.error("Failed to fetch referrals from Supabase:", error);
-    // Fallback to showing just local referrals
-    localReferrals.forEach(username => {
-      const friendItem = document.createElement('div');
-      friendItem.className = 'friend-item';
-      friendItem.textContent = username;
-      friendsList.appendChild(friendItem);
-    });
+  } catch (err) {
+    console.error("Could not load referral list:", err);
   }
 }
+
 
 async function handleReferral() {
-  const userId = getUserId();
   const tg = window.Telegram.WebApp;
+  const userId = tg.initDataUnsafe?.user?.id?.toString();
   const referralCode = tg.initDataUnsafe?.start_param;
+  const referralKey = `referral_done_for_${userId}`;
 
-  if (referralCode && referralCode.startsWith('rngs_')) {
-    const referrerId = referralCode.replace('rngs_', '');
-
-    if (referrerId !== userId) {
-      const referrals = JSON.parse(localStorage.getItem(`referrals_${referrerId}`) || '[]');
-      const username = getUsername();
-
-      if (!referrals.includes(username)) {
-        // Add user to local referral list
-        referrals.push(username);
-        localStorage.setItem(`referrals_${referrerId}`, JSON.stringify(referrals));
-
-        // Give both users 2000 coins
-        let referrerCoins = parseInt(localStorage.getItem(`coins_${referrerId}`) || '0', 10);
-        referrerCoins += 2000;
-        localStorage.setItem(`coins_${referrerId}`, referrerCoins);
-
-        let userCoins = parseInt(localStorage.getItem(`coins_${userId}`) || '0', 10);
-        userCoins += 2000;
-        localStorage.setItem(`coins_${userId}`, userCoins);
-
-        // Update coin display
-        document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
-          if (el) el.textContent = userCoins;
-        });
-
-        // Save referral to Supabase
-        await saveReferral(referrerId, userId); // Send to backend
-
-        // Show notification and refresh UI
-        showNotification('You earned 2000 coins for joining via referral!');
-        displayReferredUsers(); // Refreshes UI
-      }
-    }
+  if (!userId || !referralCode || localStorage.getItem(referralKey)) {
+    displayReferredUsers(); // still load UI
+    return;
   }
 
-  displayReferredUsers(); // Final refresh
+  try {
+    await saveReferral(referralCode, userId); // store in Supabase
+
+    // Add 2000 coins to user's balance
+    let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
+    userCoins += 2000;
+    localStorage.setItem("coins", userCoins);
+    localStorage.setItem(referralKey, "true"); // mark referral reward given
+
+    // Update coin display in UI
+    document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+      if (el) el.textContent = userCoins;
+    });
+
+    showNotification("🎉 You earned 2000 coins for joining via referral!");
+  } catch (err) {
+    console.error("Referral saving failed:", err);
+  }
+
+  displayReferredUsers(); // refresh UI regardless
 }
+
 
 // Initialize Referral System
 window.addEventListener('load', () => {
