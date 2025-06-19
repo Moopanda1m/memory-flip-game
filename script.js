@@ -1095,6 +1095,16 @@ async function handleReferral() {
   displayReferredUsers(); // refresh UI regardless
 }
 
+async function saveReferral(referral_code, telegram_id) {
+  return await fetch("/api/saveReferral", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ referral_code, telegram_id })
+  });
+}
+
 
 // Initialize Referral System
 window.addEventListener('load', () => {
