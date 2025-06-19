@@ -28,7 +28,7 @@ export default async function handler(req, res) {
               {
                 text: "Open App",
                 web_app: {
-                  url: "https://memoryflip-game-app.vercel.app" // ✅ now a proper Telegram Mini App
+                  url: `https://memoryflip-game-app.vercel.app?start=${referralCode || ""}` // ✅ now a proper Telegram Mini App
                 }
               }
             ],
