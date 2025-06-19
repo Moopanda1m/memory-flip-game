@@ -3,7 +3,11 @@ export default async function handler(req, res) {
 
   const { referral_code, telegram_id } = req.body;
 
+  // ✅ Log the incoming request body
+  console.log("Incoming request to saveReferral:", req.body);
+
   if (!referral_code || !telegram_id) {
+    console.log("Missing referral_code or telegram_id");
     return res.status(400).json({ error: "Missing referral_code or telegram_id" });
   }
 
@@ -22,13 +26,19 @@ export default async function handler(req, res) {
       }),
     });
 
+    // ✅ Log the Supabase response status
+    console.log("Supabase response status:", response.status);
+
     if (response.ok) {
+      console.log("✅ Referral saved successfully to Supabase");
       res.status(200).json({ success: true });
     } else {
       const error = await response.text();
+      console.error("❌ Supabase save failed:", error);
       res.status(500).json({ success: false, error });
     }
   } catch (err) {
+    console.error("❌ Supabase request crashed:", err.message);
     res.status(500).json({ success: false, error: err.message });
   }
 }
