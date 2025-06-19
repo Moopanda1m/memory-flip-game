@@ -1070,7 +1070,9 @@ async function displayReferredUsers() {
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
   const userId = tg.initDataUnsafe?.user?.id?.toString();
-  const referralCode = tg.initDataUnsafe?.start_param;
+  const urlParams = new URLSearchParams(window.location.search);
+  const referralCode = urlParams.get('start') || tg.initDataUnsafe?.start_param;
+
   console.log("Referral Code Received:", referralCode);
   const referralKey = `referral_done_for_${userId}`;
 
