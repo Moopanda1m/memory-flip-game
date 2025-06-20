@@ -1051,57 +1051,63 @@ async function displayReferredUsers() {
       const referrals = await response.json();
 
       if (referrals.length > 0) {
-        referrals.forEach(r => {
-          const el = document.createElement("div");
-          el.className = "friend-item";
-          el.textContent = `👤 User ${r.telegram_id}`;
-          friendsList.appendChild(el);
-        });
-      } else if (!localStorage.getItem(referralKey)) {
-        friendsList.innerHTML = '<div class="no-referral">No invites sent yet.</div>';
-      }
+      referrals.forEach(r => {
+      const el = document.createElement("div");
+      el.className = "friend-item";
+      el.textContent = `👤 User ${r.telegram_id}`;
+      friendsList.appendChild(el);
+      });
+} else {
+  friendsList.innerHTML = '<div class="no-referral">No invites sent yet.</div>';
+}
+
     }
   } catch (err) {
     console.error("Could not load referral list:", err);
   }
 }
 
-
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
   const userId = tg.initDataUnsafe?.user?.id?.toString();
-  const urlParams = new URLSearchParams(window.location.search);
-  const referralCode = urlParams.get('start') || tg.initDataUnsafe?.start_param;
-
-  console.log("Referral Code Received:", referralCode);
+  const referralCode = tg.initDataUnsafe?.start_param;
   const referralKey = `referral_done_for_${userId}`;
 
+  console.log("Referral Code Received:", referralCode);
+
   if (!userId || !referralCode || localStorage.getItem(referralKey)) {
-    displayReferredUsers(); // still load UI
+    displayReferredUsers(); // load UI anyway
     return;
   }
 
   try {
     await saveReferral(referralCode, userId); // store in Supabase
 
-    // Add 2000 coins to user's balance
+    // Give 2000 coins to User B (new user)
     let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
     userCoins += 2000;
     localStorage.setItem("coins", userCoins);
-    localStorage.setItem(referralKey, "true"); // mark referral reward given
+    localStorage.setItem(referralKey, "true"); // prevent duplicate reward
 
-    // Update coin display in UI
-    document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
-      if (el) el.textContent = userCoins;
-    });
+    // OPTIONAL: Give User A 2000 coins locally
+    let referrerCoins = parseInt(localStorage.getItem("coins") || "0", 10);
+referrerCoins += 2000;
+localStorage.setItem("coins", referrerCoins);
+
+// Update UI
+document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+  if (el) el.textContent = referrerCoins;
+});
+
 
     showNotification("🎉 You earned 2000 coins for joining via referral!");
   } catch (err) {
     console.error("Referral saving failed:", err);
   }
 
-  displayReferredUsers(); // refresh UI regardless
+  displayReferredUsers();
 }
+
 
 async function saveReferral(referral_code, telegram_id) {
   return await fetch("/api/saveReferral", {
