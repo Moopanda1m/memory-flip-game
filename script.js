@@ -2,7 +2,6 @@ console.log("Window URL:", window.location.href);
 
 const tg = window.Telegram.WebApp;
 console.log("Telegram WebApp context:", tg.initDataUnsafe);
-console.log("Referral Code Received:", tg.initDataUnsafe?.start_param);
 
 async function saveReferral(referrerId, telegramId) {
   try {
