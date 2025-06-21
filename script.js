@@ -1085,6 +1085,61 @@ async function displayReferredUsers() {
   }
 }
 
+// Function to update User A's coin balance in Supabase and show it locally
+async function rewardAndRefreshUserA(referralCode) {
+  try {
+    // Fetch User A from Supabase
+    const response = await fetch(
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}`,
+      {
+        headers: {
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ'
+        }
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to fetch User A");
+
+    const data = await response.json();
+    const userA = data[0];
+
+    if (!userA) return;
+
+    // Update User A's coin balance by 2000
+    const updatedBalance = userA.coins + 2000;
+
+    await fetch(
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?id=eq.${userA.id}`,
+      {
+        method: "PATCH",
+        headers: {
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ coins: updatedBalance })
+      }
+    );
+
+    console.log(`✅ User A rewarded. New balance: ${updatedBalance}`);
+
+    // If current user is User A, update their UI
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe?.user?.id?.toString();
+
+    if (userId === userA.telegram_id) {
+      localStorage.setItem("coins", updatedBalance);
+      document.querySelectorAll('[data-coin-display], #coins').forEach(el => { 
+        if (el) el.textContent = updatedBalance;
+      });
+      showNotification("🎉 You earned 2000 coins from a referral!");
+    }
+
+  } catch (err) {
+    console.error("❌ Failed to reward/refetch User A:", err);
+  }
+}
 
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
@@ -1103,31 +1158,28 @@ async function handleReferral() {
   }
 
   try {
-    await saveReferral(referralCode, userId); // Store in Supabase
+  await saveReferral(referralCode, userId); // Store in Supabase
 
-    // 🎁 Give 2000 coins to User B (new user)
-    let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
-    userCoins += 2000;
-    localStorage.setItem("coins", userCoins);
-    localStorage.setItem(referralKey, "true");
+  // Give 2000 coins to User B
+  let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
+  userCoins += 2000;
+  localStorage.setItem("coins", userCoins);
+  localStorage.setItem(referralKey, "true");
 
-    // ⛔️ DON'T give User A coins here — you can't credit them locally
-    // You can only show their referred list (see displayReferredUsers)
+  document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+    if (el) el.textContent = userCoins;
+  });
 
-    // ✅ Update coin UI
-    document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
-      if (el) el.textContent = userCoins;
-    });
+  showNotification("🎉 You earned 2000 coins for joining via referral!");
 
-    showNotification("🎉 You earned 2000 coins for joining via referral!");
-  } catch (err) {
-    console.error("Referral saving failed:", err);
-  }
+  // Reward User A and refresh their display
+  await rewardAndRefreshUserA(referralCode);
 
-  displayReferredUsers();
+} catch (err) {
+  console.error("Referral saving failed:", err);
 }
-
-
+displayReferredUsers();
+}
 
 async function saveReferral(referral_code, telegram_id) {
   return await fetch("/api/saveReferral", {
