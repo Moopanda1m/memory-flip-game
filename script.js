@@ -1120,11 +1120,6 @@ async function saveReferral(referral_code, telegram_id) {
   });
 }
 
-// Initialize Referral System
-window.addEventListener('load', () => {
-  handleReferral();
-  displayReferredUsers();
-});
 
 // Staking Section
 let selectedPeriod = { days: 28, apy: 0.12 };
@@ -1360,11 +1355,6 @@ function setStakeUIState(disabled) {
     messageEl.style.display = disabled ? 'block' : 'none';
   }
 }
-
-// Initialize Referral System
-window.addEventListener('load', () => {
-  handleReferral();
-});
 
 document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
