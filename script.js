@@ -1070,35 +1070,35 @@ async function displayReferredUsers() {
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
   const userId = tg.initDataUnsafe?.user?.id?.toString();
-  const referralCode = tg.initDataUnsafe?.start_param;
-  const referralKey = `referral_done_for_${userId}`;
 
+  // ✅ New: support both Telegram and query param
+  const urlParams = new URLSearchParams(window.location.search);
+  const referralCode = urlParams.get('start') || tg.initDataUnsafe?.start_param;
+
+  const referralKey = `referral_done_for_${userId}`;
   console.log("Referral Code Received:", referralCode);
 
   if (!userId || !referralCode || localStorage.getItem(referralKey)) {
-    displayReferredUsers(); // load UI anyway
+    displayReferredUsers();
     return;
   }
 
   try {
-    await saveReferral(referralCode, userId); // store in Supabase
+    await saveReferral(referralCode, userId); // Store in Supabase
 
-    // Give 2000 coins to User B (new user)
+    // 🎁 Give 2000 coins to User B (new user)
     let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
     userCoins += 2000;
     localStorage.setItem("coins", userCoins);
-    localStorage.setItem(referralKey, "true"); // prevent duplicate reward
+    localStorage.setItem(referralKey, "true");
 
-    // OPTIONAL: Give User A 2000 coins locally
-    let referrerCoins = parseInt(localStorage.getItem("coins") || "0", 10);
-referrerCoins += 2000;
-localStorage.setItem("coins", referrerCoins);
+    // ⛔️ DON'T give User A coins here — you can't credit them locally
+    // You can only show their referred list (see displayReferredUsers)
 
-// Update UI
-document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
-  if (el) el.textContent = referrerCoins;
-});
-
+    // ✅ Update coin UI
+    document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+      if (el) el.textContent = userCoins;
+    });
 
     showNotification("🎉 You earned 2000 coins for joining via referral!");
   } catch (err) {
@@ -1107,6 +1107,7 @@ document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
 
   displayReferredUsers();
 }
+
 
 
 async function saveReferral(referral_code, telegram_id) {
