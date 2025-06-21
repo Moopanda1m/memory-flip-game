@@ -1026,9 +1026,8 @@ async function displayReferredUsers() {
   const friendsList = document.getElementById("friends-list");
   if (!friendsList || !userId) return;
 
-  friendsList.innerHTML = ""; // Clear existing
+  friendsList.innerHTML = ""; // Clear UI
 
-  // 1. Show referral bonus if the user joined with a referral
   const referralKey = `referral_done_for_${userId}`;
   if (localStorage.getItem(referralKey)) {
     const refMsg = document.createElement("div");
@@ -1037,7 +1036,7 @@ async function displayReferredUsers() {
     friendsList.appendChild(refMsg);
   }
 
-  // 2. Fetch referrals sent by this user
+  // Step 2: Fetch referrals sent by this user
   try {
     const response = await fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${userId}`, {
       headers: {
@@ -1050,21 +1049,42 @@ async function displayReferredUsers() {
       const referrals = await response.json();
 
       if (referrals.length > 0) {
-      referrals.forEach(r => {
-      const el = document.createElement("div");
-      el.className = "friend-item";
-      el.textContent = `👤 User ${r.telegram_id}`;
-      friendsList.appendChild(el);
-      });
-} else {
-  friendsList.innerHTML = '<div class="no-referral">No invites sent yet.</div>';
-}
+        referrals.forEach(r => {
+          const el = document.createElement("div");
+          el.className = "friend-item";
+          el.textContent = `👤 User ${r.telegram_id}`;
+          friendsList.appendChild(el);
+        });
 
+        // ✅ Reward User A here
+        const rewardGivenKey = `referral_reward_given_for_${userId}`;
+        if (!localStorage.getItem(rewardGivenKey)) {
+          const reward = referrals.length * 2000;
+          let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
+          userCoins += reward;
+          localStorage.setItem("coins", userCoins);
+          localStorage.setItem(rewardGivenKey, "true");
+
+          // Update UI
+          document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+            if (el) el.textContent = userCoins;
+          });
+
+          showNotification(`🎁 You earned ${reward} coins from referrals!`);
+        }
+
+      } else {
+        friendsList.innerHTML += `<div class="no-referral">No invites sent yet.</div>`;
+      }
+    } else {
+      friendsList.innerHTML += `<div class="no-referral">Could not fetch data.</div>`;
     }
+
   } catch (err) {
     console.error("Could not load referral list:", err);
   }
 }
+
 
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
