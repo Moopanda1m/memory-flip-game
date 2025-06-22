@@ -1085,11 +1085,10 @@ async function displayReferredUsers() {
   }
 }
 
-// Function to update User A's coin balance in Supabase and show it locally
 async function rewardAndRefreshUserA(referralCode) {
   try {
     const userATelegramId = referralCode.replace("rngs_", "");
-    // Fetch User A from Supabase
+
     const response = await fetch(
       `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?telegram_id=eq.${userATelegramId}`,
       {
@@ -1104,10 +1103,8 @@ async function rewardAndRefreshUserA(referralCode) {
 
     const data = await response.json();
     const userA = data[0];
-
     if (!userA) return;
 
-    // ✅ Step 2: Fix null coin issue
     const currentBalance = parseInt(userA.coins || "0", 10);
     const updatedBalance = currentBalance + 2000;
 
@@ -1126,13 +1123,12 @@ async function rewardAndRefreshUserA(referralCode) {
 
     console.log(`✅ User A (${userATelegramId}) rewarded with 2000 coins`);
 
-    // If current user is User A, update their UI
     const tg = window.Telegram.WebApp;
     const userId = tg.initDataUnsafe?.user?.id?.toString();
 
     if (userId === userA.telegram_id) {
       localStorage.setItem("coins", updatedBalance);
-      document.querySelectorAll('[data-coin-display], #coins').forEach(el => { 
+      document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
         if (el) el.textContent = updatedBalance;
       });
       showNotification("🎉 You earned 2000 coins from a referral!");
@@ -1142,6 +1138,7 @@ async function rewardAndRefreshUserA(referralCode) {
     console.error("❌ Failed to reward/refetch User A:", err);
   }
 }
+
 
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
