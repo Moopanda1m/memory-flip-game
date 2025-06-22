@@ -1085,12 +1085,12 @@ async function displayReferredUsers() {
   }
 }
 
+// Function to update User A's coin balance in Supabase and show it locally
 async function rewardAndRefreshUserA(referralCode) {
   try {
-    const userATelegramId = referralCode.replace("rngs_", "");
-
+    // Fetch the most recent referral entry for the given referral code
     const response = await fetch(
-      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?telegram_id=eq.${userATelegramId}`,
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}&order=timestamp.desc&limit=1`,
       {
         headers: {
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
@@ -1103,7 +1103,11 @@ async function rewardAndRefreshUserA(referralCode) {
 
     const data = await response.json();
     const userA = data[0];
-    if (!userA) return;
+
+    if (!userA || !userA.telegram_id) {
+      console.warn("No User A found for this referral code");
+      return;
+    }
 
     const currentBalance = parseInt(userA.coins || "0", 10);
     const updatedBalance = currentBalance + 2000;
@@ -1113,16 +1117,17 @@ async function rewardAndRefreshUserA(referralCode) {
       {
         method: "PATCH",
         headers: {
-          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          apikey: 'YOUR_SUPABASE_API_KEY',
+          Authorization: 'Bearer YOUR_SUPABASE_API_KEY',
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ coins: updatedBalance })
       }
     );
 
-    console.log(`✅ User A (${userATelegramId}) rewarded with 2000 coins`);
+    console.log(`✅ User A (${userA.telegram_id}) rewarded with 2000 coins`);
 
+    // If the current user is User A, update their UI
     const tg = window.Telegram.WebApp;
     const userId = tg.initDataUnsafe?.user?.id?.toString();
 
@@ -1135,7 +1140,7 @@ async function rewardAndRefreshUserA(referralCode) {
     }
 
   } catch (err) {
-    console.error("❌ Failed to reward/refetch User A:", err);
+    console.error("❌ Failed to reward User A:", err);
   }
 }
 
