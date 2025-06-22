@@ -1085,12 +1085,15 @@ async function displayReferredUsers() {
   }
 }
 
-// Function to update User A's coin balance in Supabase and show it locally
 async function rewardAndRefreshUserA(referralCode) {
+  console.log("🏁 rewardAndRefreshUserA called with referralCode:", referralCode);
+
+  const userATelegramId = referralCode.replace("rngs_", "");
+  console.log("👉 userATelegramId:", userATelegramId);
+
   try {
-    // Fetch the most recent referral entry for the given referral code
     const response = await fetch(
-      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}&order=timestamp.desc&limit=1`,
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?telegram_id=eq.${userATelegramId}`,
       {
         headers: {
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
@@ -1102,17 +1105,20 @@ async function rewardAndRefreshUserA(referralCode) {
     if (!response.ok) throw new Error("Failed to fetch User A");
 
     const data = await response.json();
-    const userA = data[0];
+    console.log("📦 Data from Supabase:", data);
 
-    if (!userA || !userA.telegram_id) {
-      console.warn("No User A found for this referral code");
+    const userA = data[0];
+    if (!userA) {
+      console.warn("⚠️ No matching userA found");
       return;
     }
 
     const currentBalance = parseInt(userA.coins || "0", 10);
     const updatedBalance = currentBalance + 2000;
 
-    await fetch(
+    console.log(`💰 Current balance: ${currentBalance}, updating to: ${updatedBalance}`);
+
+    const patch = await fetch(
       `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?id=eq.${userA.id}`,
       {
         method: "PATCH",
@@ -1125,22 +1131,25 @@ async function rewardAndRefreshUserA(referralCode) {
       }
     );
 
-    console.log(`✅ User A (${userA.telegram_id}) rewarded with 2000 coins`);
+    console.log("🛠 Patch response status:", patch.status);
 
-    // If the current user is User A, update their UI
     const tg = window.Telegram.WebApp;
     const userId = tg.initDataUnsafe?.user?.id?.toString();
+    console.log("👤 Current Telegram ID:", userId);
 
     if (userId === userA.telegram_id) {
+      console.log("✅ This is User A — updating localStorage/UI");
       localStorage.setItem("coins", updatedBalance);
       document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
         if (el) el.textContent = updatedBalance;
       });
       showNotification("🎉 You earned 2000 coins from a referral!");
+    } else {
+      console.log("🟡 This is not User A — no UI update needed");
     }
 
   } catch (err) {
-    console.error("❌ Failed to reward User A:", err);
+    console.error("❌ Failed in rewardAndRefreshUserA:", err);
   }
 }
 
