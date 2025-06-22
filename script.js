@@ -1091,7 +1091,7 @@ async function rewardAndRefreshUserA(referralCode) {
     const userATelegramId = referralCode.replace("rngs_", "");
     // Fetch User A from Supabase
     const response = await fetch(
-      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}`,
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?telegram_id=eq.${userATelegramId}`,
       {
         headers: {
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
@@ -1124,7 +1124,7 @@ async function rewardAndRefreshUserA(referralCode) {
       }
     );
 
-    console.log(`✅ User A rewarded. New balance: ${updatedBalance}`);
+    console.log(`✅ User A (${userATelegramId}) rewarded with 2000 coins`);
 
     // If current user is User A, update their UI
     const tg = window.Telegram.WebApp;
