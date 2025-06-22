@@ -1088,6 +1088,7 @@ async function displayReferredUsers() {
 // Function to update User A's coin balance in Supabase and show it locally
 async function rewardAndRefreshUserA(referralCode) {
   try {
+    const userATelegramId = referralCode.replace("rngs_", "");
     // Fetch User A from Supabase
     const response = await fetch(
       `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}`,
