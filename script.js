@@ -1,26 +1,52 @@
-console.log("Window URL:", window.location.href);
-
-const tg = window.Telegram.WebApp;
-console.log("Telegram WebApp context:", tg.initDataUnsafe);
-
-async function saveReferral(referrerId, telegramId) {
+async function rewardReferrer(referralCode) {
   try {
-    const response = await fetch("/api/saveReferral", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        referral_code: referrerId,
-        telegram_id: telegramId
-      })
-    });
+    const response = await fetch(
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}&rewarded=eq.false`,
+      {
+        headers: {
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ'
+        }
+      }
+    );
 
-    if (!response.ok) {
-      console.error("Failed to save referral:", response.statusText);
+    if (!response.ok) return;
+
+    const unrewardedReferrals = await response.json();
+    if (unrewardedReferrals.length === 0) return;
+
+    // Mark all as rewarded
+    const updatePromises = unrewardedReferrals.map(referral =>
+      fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?id=eq.${referral.id}`, {
+        method: "PATCH",
+        headers: {
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ rewarded: true })
+      })
+    );
+
+    await Promise.all(updatePromises);
+
+    const totalReward = unrewardedReferrals.length * 2000;
+    const tg = window.Telegram.WebApp;
+    const currentUserId = tg.initDataUnsafe?.user?.id?.toString();
+
+    if (currentUserId === referralCode.replace('rngs_', '')) {
+      let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
+      userCoins += totalReward;
+      localStorage.setItem("coins", userCoins);
+
+      document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+        if (el) el.textContent = userCoins;
+      });
+
+      showNotification(`🎉 You earned ${totalReward} coins from referrals!`);
     }
   } catch (error) {
-    console.error("Error saving referral:", error);
+    console.error("Error rewarding referrer:", error);
   }
 }
 
@@ -1026,7 +1052,7 @@ async function displayReferredUsers() {
   const friendsList = document.getElementById("friends-list");
   if (!friendsList || !userId) return;
 
-  friendsList.innerHTML = ""; // Clear UI
+  friendsList.innerHTML = "";
 
   const referralKey = `referral_done_for_${userId}`;
   if (localStorage.getItem(referralKey)) {
@@ -1036,9 +1062,8 @@ async function displayReferredUsers() {
     friendsList.appendChild(refMsg);
   }
 
-  // Step 2: Fetch referrals sent by this user
   try {
-    const response = await fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${userId}`, {
+    const response = await fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.rngs_${userId}`, {
       headers: {
         apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
         Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ'
@@ -1047,7 +1072,6 @@ async function displayReferredUsers() {
 
     if (response.ok) {
       const referrals = await response.json();
-
       if (referrals.length > 0) {
         referrals.forEach(r => {
           const el = document.createElement("div");
@@ -1055,45 +1079,23 @@ async function displayReferredUsers() {
           el.textContent = `👤 User ${r.telegram_id}`;
           friendsList.appendChild(el);
         });
-
-        // ✅ Reward User A here
-        const rewardGivenKey = `referral_reward_given_for_${userId}`;
-        if (!localStorage.getItem(rewardGivenKey)) {
-          const reward = referrals.length * 2000;
-          let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
-          userCoins += reward;
-          localStorage.setItem("coins", userCoins);
-          localStorage.setItem(rewardGivenKey, "true");
-
-          // Update UI
-          document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
-            if (el) el.textContent = userCoins;
-          });
-
-          showNotification(`🎁 You earned ${reward} coins from referrals!`);
-        }
-
       } else {
         friendsList.innerHTML += `<div class="no-referral">No invites sent yet.</div>`;
       }
     } else {
       friendsList.innerHTML += `<div class="no-referral">Could not fetch data.</div>`;
     }
-
   } catch (err) {
     console.error("Could not load referral list:", err);
   }
 }
 
+// Function to update User A's coin balance in Supabase and show it locally
 async function rewardAndRefreshUserA(referralCode) {
-  console.log("🏁 rewardAndRefreshUserA called with referralCode:", referralCode);
-
-  const userATelegramId = referralCode.replace("rngs_", "");
-  console.log("👉 userATelegramId:", userATelegramId);
-
   try {
+    // ✅ Step 1: Find the referrer (User A) using the referral_code
     const response = await fetch(
-      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?telegram_id=eq.${userATelegramId}`,
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}`,
       {
         headers: {
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
@@ -1105,54 +1107,51 @@ async function rewardAndRefreshUserA(referralCode) {
     if (!response.ok) throw new Error("Failed to fetch User A");
 
     const data = await response.json();
-    console.log("📦 Data from Supabase:", data);
-
     const userA = data[0];
+
     if (!userA) {
-      console.warn("⚠️ No matching userA found");
+      console.warn("❌ No User A found for referral_code:", referralCode);
       return;
     }
 
+    // ✅ Step 2: Add 2000 coins to User A's current balance
     const currentBalance = parseInt(userA.coins || "0", 10);
     const updatedBalance = currentBalance + 2000;
 
-    console.log(`💰 Current balance: ${currentBalance}, updating to: ${updatedBalance}`);
-
-    const patch = await fetch(
+    // ✅ Step 3: Save updated balance back to Supabase
+    const patchResponse = await fetch(
       `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?id=eq.${userA.id}`,
       {
         method: "PATCH",
         headers: {
-          apikey: 'YOUR_SUPABASE_API_KEY',
-          Authorization: 'Bearer YOUR_SUPABASE_API_KEY',
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
           "Content-Type": "application/json"
         },
         body: JSON.stringify({ coins: updatedBalance })
       }
     );
 
-    console.log("🛠 Patch response status:", patch.status);
+    if (!patchResponse.ok) throw new Error("Failed to update User A's coins");
 
+    console.log(`✅ User A (${userA.telegram_id}) rewarded with 2000 coins`);
+
+    // ✅ Step 4: If the current user is also User A, update UI
     const tg = window.Telegram.WebApp;
     const userId = tg.initDataUnsafe?.user?.id?.toString();
-    console.log("👤 Current Telegram ID:", userId);
 
     if (userId === userA.telegram_id) {
-      console.log("✅ This is User A — updating localStorage/UI");
       localStorage.setItem("coins", updatedBalance);
       document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
         if (el) el.textContent = updatedBalance;
       });
       showNotification("🎉 You earned 2000 coins from a referral!");
-    } else {
-      console.log("🟡 This is not User A — no UI update needed");
     }
 
   } catch (err) {
-    console.error("❌ Failed in rewardAndRefreshUserA:", err);
+    console.error("❌ Failed to reward/refetch User A:", err);
   }
 }
-
 
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
@@ -1161,30 +1160,27 @@ async function handleReferral() {
   const referralCode = urlParams.get('start') || tg.initDataUnsafe?.start_param;
   const referralKey = `referral_done_for_${userId}`;
 
-  // ✅ Reject invalid referrals (like App Center junk)
   if (!userId || !referralCode || localStorage.getItem(referralKey) || !referralCode.startsWith("rngs_")) {
     displayReferredUsers();
     return;
   }
 
   try {
-    await saveReferral(referralCode, userId); // Store in Supabase
+    const success = await saveReferral(referralCode, userId);
 
-    // Give 2000 coins to User B (current user)
-    let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
-    userCoins += 2000;
-    localStorage.setItem("coins", userCoins);
-    localStorage.setItem(referralKey, "true");
+    if (success) {
+      // Reward User B with 2000 coins
+      let userCoins = parseInt(localStorage.getItem("coins") || "0", 10);
+      userCoins += 2000;
+      localStorage.setItem("coins", userCoins);
+      localStorage.setItem(referralKey, "true");
 
-    document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
-      if (el) el.textContent = userCoins;
-    });
+      document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+        if (el) el.textContent = userCoins;
+      });
 
-    showNotification("🎉 You earned 2000 coins for joining via referral!");
-
-    // Reward User A and update balance
-    await rewardAndRefreshUserA(referralCode);
-
+      showNotification("🎉 You earned 2000 coins for joining via referral!");
+    }
   } catch (err) {
     console.error("Referral saving failed:", err);
   }
@@ -1192,15 +1188,31 @@ async function handleReferral() {
   displayReferredUsers();
 }
 
+async function saveReferral(referralCode, telegramId) {
+  try {
+    const response = await fetch("/api/saveReferral", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        referral_code: referralCode,
+        telegram_id: telegramId,
+        rewarded: false
+      })
+    });
 
-async function saveReferral(referral_code, telegram_id) {
-  return await fetch("/api/saveReferral", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ referral_code, telegram_id })
-  });
+    if (!response.ok) {
+      console.error("Failed to save referral:", response.statusText);
+      return false;
+    }
+
+    await rewardReferrer(referralCode);
+    return true;
+  } catch (error) {
+    console.error("Error saving referral:", error);
+    return false;
+  }
 }
 
 
