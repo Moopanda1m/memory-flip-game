@@ -1207,7 +1207,7 @@ async function saveReferral(referralCode, telegramId) {
       return false;
     }
 
-    await rewardReferrer(referralCode);
+    await rewardAndRefreshUserA(referralCode);
     return true;
   } catch (error) {
     console.error("Error saving referral:", error);
