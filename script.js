@@ -1128,7 +1128,9 @@ async function rewardAndRefreshUserA(referralCode) {
           Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ coins: updatedBalance })
+        body: JSON.stringify({ 
+          coins: updatedBalance,
+      rewarded: true })
       }
     );
 

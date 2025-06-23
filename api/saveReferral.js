@@ -33,7 +33,9 @@ export default async function handler(req, res) {
         headers,
         body: JSON.stringify({
           telegram_id: userATelegramId,
-          referral_code: `self_${userATelegramId}` // optional tag
+          referral_code: `rngs_${userATelegramId}`, // optional tag
+          coins: 0,
+          rewarded: false
         })
       });
     } else {
