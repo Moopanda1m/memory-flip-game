@@ -1237,16 +1237,6 @@ async function saveReferral(referralCode, telegramId) {
   }
 }
 
-// ✅ THIS BLOCK GOES AT THE END
-window.addEventListener("load", () => {
-  const tg = window.Telegram.WebApp;
-  const userId = tg.initDataUnsafe?.user?.id?.toString();
-  if (userId) {
-    const referralCode = `rngs_${userId}`;
-    rewardAndRefreshUserA(referralCode); // ✅ Check for new referrals on load
-  }
-});
-
 // Staking Section
 let selectedPeriod = { days: 28, apy: 0.12 };
 let availableBalance = parseInt(localStorage.getItem('coins') || '0', 10);

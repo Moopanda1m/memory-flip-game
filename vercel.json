@@ -10,6 +10,10 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/autoRewardReferrers.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "index.html",
       "use": "@vercel/static"
     },
@@ -71,6 +75,17 @@
     {
       "src": "/(.*)",
       "dest": "/index.html"
+    }
+  ],
+  "functions": {
+    "api/autoRewardReferrers.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
+  "cron": [
+    {
+      "path": "/api/autoRewardReferrers",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
