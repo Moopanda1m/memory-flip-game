@@ -1093,9 +1093,9 @@ async function displayReferredUsers() {
 // Function to update User A's coin balance in Supabase and show it locally
 async function rewardAndRefreshUserA(referralCode) {
   try {
-    // ✅ Step 1: Find the referrer (User A) using the referral_code
+    // Fetch all unrewarded referrals for this code
     const response = await fetch(
-      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}`,
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?referral_code=eq.${referralCode}&rewarded=eq.false`,
       {
         headers: {
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
@@ -1104,56 +1104,76 @@ async function rewardAndRefreshUserA(referralCode) {
       }
     );
 
-    if (!response.ok) throw new Error("Failed to fetch User A");
+    if (!response.ok) throw new Error("Failed to fetch referrals");
 
-    const data = await response.json();
-    const userA = data[0];
+    const newReferrals = await response.json();
+    if (newReferrals.length === 0) return;
 
-    if (!userA) {
-      console.warn("❌ No User A found for referral_code:", referralCode);
-      return;
-    }
+    // Calculate total reward
+    const totalReward = newReferrals.length * 2000;
 
-    // ✅ Step 2: Add 2000 coins to User A's current balance
-    const currentBalance = parseInt(userA.coins || "0", 10);
-    const updatedBalance = currentBalance + 2000;
+    // Get referrer ID
+    const referrerId = referralCode.replace("rngs_", "");
 
-    // ✅ Step 3: Save updated balance back to Supabase
-    const patchResponse = await fetch(
-      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?id=eq.${userA.id}`,
+    // Fetch User A's latest coin balance
+    const referrerRes = await fetch(
+      `https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?telegram_id=eq.${referrerId}&select=coins,id`,
       {
+        headers: {
+          apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ'
+        }
+      }
+    );
+    const referrerData = await referrerRes.json();
+    const userA = referrerData[0];
+    if (!userA) return;
+
+    const updatedCoins = (parseInt(userA.coins || "0", 10)) + totalReward;
+
+    // Update referrer’s coins
+    await fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?id=eq.${userA.id}`, {
+      method: "PATCH",
+      headers: {
+        apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        coins: updatedCoins
+      })
+    });
+
+    // Mark all new referrals as rewarded
+    const markPromises = newReferrals.map(ref =>
+      fetch(`https://vwvmjzapwmruihtyqfkl.supabase.co/rest/v1/referrals?id=eq.${ref.id}`, {
         method: "PATCH",
         headers: {
           apikey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
           Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ3dm1qemFwd21ydWlodHlxZmtsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MDA0MTQsImV4cCI6MjA2NTM3NjQxNH0.dYyCHMytotTyUMnZajeFccJYpU5uMybC3RuSpjVMIpQ',
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ 
-          coins: updatedBalance,
-      rewarded: true })
-      }
+        body: JSON.stringify({ rewarded: true })
+      })
     );
+    await Promise.all(markPromises);
 
-    if (!patchResponse.ok) throw new Error("Failed to update User A's coins");
-
-    console.log(`✅ User A (${userA.telegram_id}) rewarded with 2000 coins`);
-
-    // ✅ Step 4: If the current user is also User A, update UI
+    // Update local coins if current user is also referrer
     const tg = window.Telegram.WebApp;
-    const userId = tg.initDataUnsafe?.user?.id?.toString();
-
-    if (userId === userA.telegram_id) {
-      localStorage.setItem("coins", updatedBalance);
+    const currentUserId = tg.initDataUnsafe?.user?.id?.toString();
+    if (currentUserId === referrerId) {
+      localStorage.setItem("coins", updatedCoins);
       document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
-        if (el) el.textContent = updatedBalance;
+        if (el) el.textContent = updatedCoins;
       });
-      showNotification("🎉 You earned 2000 coins from a referral!");
+      showNotification(`🎉 You earned ${totalReward} coins from referrals!`);
     }
 
   } catch (err) {
-    console.error("❌ Failed to reward/refetch User A:", err);
+    console.error("Error rewarding referrer:", err);
   }
 }
+
 
 async function handleReferral() {
   const tg = window.Telegram.WebApp;
@@ -1217,6 +1237,15 @@ async function saveReferral(referralCode, telegramId) {
   }
 }
 
+// ✅ THIS BLOCK GOES AT THE END
+window.addEventListener("load", () => {
+  const tg = window.Telegram.WebApp;
+  const userId = tg.initDataUnsafe?.user?.id?.toString();
+  if (userId) {
+    const referralCode = `rngs_${userId}`;
+    rewardAndRefreshUserA(referralCode); // ✅ Check for new referrals on load
+  }
+});
 
 // Staking Section
 let selectedPeriod = { days: 28, apy: 0.12 };
