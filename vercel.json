@@ -81,11 +81,5 @@
     "api/autoRewardReferrers.js": {
       "runtime": "nodejs18.x"
     }
-  },
-  "cron": [
-    {
-      "path": "/api/autoRewardReferrers",
-      "schedule": "*/5 * * * *"
-    }
-  ]
+  }
 }
