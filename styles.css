@@ -2045,3 +2045,119 @@ button:disabled {
     font-size: 1rem;
   }
 }
+
+/* Airdrop Container Styles */
+#airdrop-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  color: white;
+}
+
+.airdrop-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.airdrop-title {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.airdrop-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 40px;
+  padding: 0 20px;
+}
+
+.flow-step {
+  width: 100%;
+  max-width: 280px;
+}
+
+.step-text {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.flow-divider {
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 300;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+  #airdrop-container {
+    padding: 16px;
+  }
+  
+  .airdrop-title {
+    font-size: 28px;
+  }
+  
+  .airdrop-flow {
+    padding: 0 10px;
+    gap: 16px;
+  }
+  
+  .step-text {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+  
+}
+
+@media (max-width: 360px) {
+  .airdrop-title {
+    font-size: 24px;
+  }
+  
+  .step-text {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  
+}
+
+/* Landscape orientation adjustments */
+@media (orientation: landscape) and (max-height: 500px) {
+  #airdrop-container {
+    min-height: auto;
+    padding: 16px;
+  }
+  
+  .airdrop-header {
+    margin-bottom: 20px;
+  }
+  
+  .airdrop-flow {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .flow-divider {
+    height: 20px;
+  }
+}
