@@ -935,6 +935,84 @@ function smartTimer() {
       resumeTimer();
     });
   }
+    // ========== WATCH AD TASK PROGRESS ==========
+  const adCard = document.querySelector(".ad-card");
+  const segments = document.querySelectorAll(".progress-segment");
+  const maxAdsPerDay = 5;
+  const rewardPerAd = 5000;
+  const adViewKey = "adCardViews";
+  const adDateKey = "lastAdViewDate";
+
+  function getTodayDate() {
+    return new Date().toISOString().split("T")[0];
+  }
+
+  function getAdProgress() {
+    const storedDate = localStorage.getItem(adDateKey);
+    const storedViews = parseInt(localStorage.getItem(adViewKey)) || 0;
+    const today = getTodayDate();
+
+    if (storedDate !== today) {
+      localStorage.setItem(adDateKey, today);
+      localStorage.setItem(adViewKey, "0");
+      return 0;
+    }
+
+    return Math.min(storedViews, maxAdsPerDay);
+  }
+
+  function updateAdProgressUI(viewsWatched) {
+    segments.forEach((segment, index) => {
+      if (index < viewsWatched) {
+        segment.classList.add("active");
+      } else {
+        segment.classList.remove("active");
+      }
+    });
+  }
+
+  function rewardUserAndSave(views) {
+    const coins = parseInt(localStorage.getItem("coins") || "0", 10);
+    const updatedCoins = coins + rewardPerAd;
+    localStorage.setItem("coins", updatedCoins);
+    localStorage.setItem(adViewKey, views);
+    document.querySelectorAll('[data-coin-display], #coins').forEach(el => {
+      if (el) el.textContent = updatedCoins;
+    });
+  }
+
+  adCard?.addEventListener("click", () => {
+    const today = getTodayDate();
+    const storedDate = localStorage.getItem(adDateKey);
+    let views = parseInt(localStorage.getItem(adViewKey)) || 0;
+
+    if (storedDate !== today) {
+      views = 0;
+      localStorage.setItem(adDateKey, today);
+    }
+
+    if (views >= maxAdsPerDay) {
+      alert("You have already watched all 5 ads for today!");
+      return;
+    }
+
+    // Show ad using your MoneyTag ad zone (adjust if needed)
+    show_9510050()
+      .then(() => {
+        views += 1;
+        rewardUserAndSave(views);
+        updateAdProgressUI(views);
+        alert(`✅ You earned ${rewardPerAd} coins! (${views}/5 ads watched today)`);
+      })
+      .catch(() => {
+        alert("⚠️ Ad failed to load. Please try again.");
+      });
+  });
+
+  const initialViews = getAdProgress();
+  updateAdProgressUI(initialViews);
+  // ========== END OF WATCH AD TASK ==========
+
 });
 
 // Bottom Navigation Tab Switching
@@ -1487,4 +1565,47 @@ document.addEventListener('DOMContentLoaded', () => {
     handleReferral();
     displayReferredUsers();
   }, 1000);
+});
+
+document.querySelectorAll(".start-btn").forEach((btn) => {
+  const taskId = btn.dataset.taskId;
+  const taskKey = `task_completed_${taskId}`;
+
+  // If already completed, disable it and grey out
+  if (localStorage.getItem(taskKey) === "true") {
+    btn.disabled = true;
+    btn.textContent = "Completed";
+    btn.style.backgroundColor = "#999";
+    btn.closest(".task-item").style.opacity = "0.5";
+  }
+
+  btn.addEventListener("click", () => {
+    const url = btn.dataset.url;
+    if (!url) return;
+
+    // Open the URL in a new tab
+    window.open(url, "_blank");
+
+    // Get the coin amount
+    const taskItem = btn.closest(".task-item");
+    const coinAmountSpan = taskItem?.querySelector(".coin-amount");
+    const reward = parseInt(coinAmountSpan?.textContent || "0", 10);
+
+    // Update coin count in localStorage
+    let coins = parseInt(localStorage.getItem("coins") || "0", 10);
+    coins += reward;
+    localStorage.setItem("coins", coins);
+
+    // Update coin display
+    document.getElementById("coins").textContent = coins;
+
+    // Mark the task visually completed
+    btn.disabled = true;
+    btn.textContent = "Completed";
+    btn.style.backgroundColor = "#999";
+    taskItem.style.opacity = "0.5";
+
+    // Save task completion status
+    localStorage.setItem(taskKey, "true");
+  });
 });

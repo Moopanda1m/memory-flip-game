@@ -2161,3 +2161,229 @@ button:disabled {
     height: 20px;
   }
 }
+
+/* Task Container Styles */
+.tab-container {
+  background: #000000;
+  height: calc(100vh - 80px); /* Fixed height minus bottom nav */
+  padding: 20px;
+  padding-bottom: 100px; /* Extra space for bottom nav */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: white;
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Hide scrollbar for webkit browsers (Chrome, Safari) */
+.tab-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.tab-container {
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for IE and Edge */
+.tab-container {
+  -ms-overflow-style: none;
+}
+
+/* Title Styles */
+.task-title {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.task-title h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* AD Card Styles */
+.ad-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 30px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ad-card-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon-placeholder {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.ad-info {
+  flex: 1;
+}
+
+.ad-info h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  text-align: left;
+}
+
+/* Progress Bar Styles */
+.progress-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.progress-segment {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  flex: 1;
+  transition: background 0.3s ease;
+}
+
+.progress-segment.active {
+  background: #007AFF;
+}
+
+/* Coin Reward Styles */
+.coin-reward {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coin-icon img {
+  width: 1px;
+  height: 17.5px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.coin-amount {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Task Section Styles */
+.task-section h2 {
+  color: white;
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  margin-top: 0;
+  text-align: left;
+  padding-left: 10px;
+}
+
+/* Task Item Styles */
+.task-item {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.task-icon {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.task-info {
+  flex: 1;
+}
+
+.task-info h4 {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0 0 8px 0;
+  text-align: left;
+}
+
+.task-reward {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-reward .coin-icon {
+  font-size: 16px;
+}
+
+.task-reward .coin-amount {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Start Button Styles */
+.start-btn {
+  background: #007AFF;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 70px;
+}
+
+.start-btn:hover {
+  background: #0056CC;
+  transform: translateY(-1px);
+}
+
+.start-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 480px) {
+  .tab-container {
+    padding: 15px;
+    padding-bottom: 120px; /* More space for mobile */
+    height: calc(100vh - 70px); /* Adjust for mobile nav height */
+  }
+  
+  .task-title h1 {
+    font-size: 20px;
+  }
+  
+  .ad-card-content {
+    gap: 12px;
+  }
+  
+  .ad-icon {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .task-item {
+    padding: 14px;
+    gap: 12px;
+  }
+  
+  .task-icon {
+    width: 45px;
+    height: 45px;
+  }
+}
