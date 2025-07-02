@@ -22,6 +22,10 @@
       "use": "@vercel/static"
     },
     {
+      "src": "verify-token-08870e02.txt",
+      "use": "@vercel/static"
+    },
+    {
       "src": "music/**",
       "use": "@vercel/static"
     },
@@ -69,12 +73,12 @@
       "dest": "/music/$1"
     },
     {
-  "src": "/verify-token-08870e02.txt",
-  "headers": {
-    "Content-Type": "text/plain"
-  },
-  "dest": "/verify-token-08870e02.txt"
-},
+      "src": "/verify-token-08870e02.txt",
+      "headers": {
+        "Content-Type": "text/plain"
+      },
+      "dest": "/verify-token-08870e02.txt"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
