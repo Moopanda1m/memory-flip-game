@@ -69,12 +69,12 @@
       "dest": "/music/$1"
     },
     {
-      "src": "/verify-token-08870e02.txt",
-      "headers": {
-        "Content-Type": "text/plain"
-      },
-      "dest": "/verify-token-08870e02.txt"
-    },
+  "src": "/verify-token-08870e02.txt",
+  "headers": {
+    "Content-Type": "text/plain"
+  },
+  "dest": "/verify-token-08870e02.txt"
+},
     {
       "src": "/(.*)",
       "dest": "/index.html"
